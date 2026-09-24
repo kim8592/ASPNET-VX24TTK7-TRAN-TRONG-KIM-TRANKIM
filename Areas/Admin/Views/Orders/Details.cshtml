@@ -1,0 +1,141 @@
+@using MilkTeaWeb.Models.Enums
+@using MilkTeaWeb.ViewModels.Admin.Orders
+@using MilkTeaWeb.ViewModels.Orders
+@model AdminOrderDetailsViewModel
+@{
+    ViewData["Title"] = $"Đơn hàng #{Model.OrderId}";
+}
+
+<section class="admin-order-details-heading" aria-labelledby="order-title">
+    <a class="order-details-back-link" asp-action="Index">
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+        <span>Quay lại đơn hàng</span>
+    </a>
+    <div class="admin-order-details-heading__row">
+        <div>
+            <p class="eyebrow">ĐƠN HÀNG #@Model.OrderId</p>
+            <h1 id="order-title">Chi tiết đơn hàng</h1>
+            <p>Đặt lúc @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy, HH:mm")</p>
+            @if (Model.UpdatedAt.HasValue)
+            {
+                <p class="admin-order-details-heading__updated">Cập nhật lần cuối @Model.UpdatedAt.Value.ToLocalTime().ToString("dd/MM/yyyy, HH:mm")</p>
+            }
+        </div>
+        <span class="order-status order-status--@Model.OrderStatus.ToString().ToLowerInvariant()" role="status">@OrderDisplay.Status(Model.OrderStatus, Model.FulfillmentMethod)</span>
+    </div>
+</section>
+
+<div class="admin-order-details-layout">
+    <div class="order-details-content">
+        <section class="order-details-section admin-order-workflow" aria-labelledby="workflow-title">
+            <div class="admin-order-workflow__header">
+                <div>
+                    <p class="eyebrow">TRẠNG THÁI HIỆN TẠI</p>
+                    <h2 id="workflow-title">Xử lý đơn hàng</h2>
+                </div>
+                <span class="admin-order-workflow__status">@OrderDisplay.Status(Model.OrderStatus, Model.FulfillmentMethod)</span>
+            </div>
+            @if (Model.CanAdvance || Model.CanCancel)
+            {
+                <p class="admin-order-workflow__hint">
+                    @if (Model.CanAdvance)
+                    {
+                        <span>Bước tiếp theo: <strong>@Model.NextActionLabel</strong></span>
+                    }
+                    else
+                    {
+                        <span>Đơn hàng đã ở bước cuối của quy trình.</span>
+                    }
+                </p>
+                <div class="admin-order-workflow__actions">
+                    @if (Model.CanAdvance)
+                    {
+                        <form asp-action="AdvanceStatus" asp-route-id="@Model.OrderId" method="post">
+                            <input type="hidden" name="ExpectedStatus" value="@((int)Model.ExpectedStatus)" />
+                            <button class="btn btn-primary" type="submit">@Model.NextActionLabel</button>
+                        </form>
+                    }
+                    @if (Model.CanCancel)
+                    {
+                        <form asp-action="Cancel" asp-route-id="@Model.OrderId" method="post" data-confirm-form data-confirm-title="Hủy đơn hàng?" data-confirm-message="Đơn hàng sẽ được chuyển sang trạng thái đã hủy và không thể khôi phục." data-confirm-button-label="Hủy đơn hàng" data-confirm-button-style="btn-danger">
+                            <input type="hidden" name="ExpectedStatus" value="@((int)Model.ExpectedStatus)" />
+                            <button class="btn btn-danger" type="submit">Hủy đơn hàng</button>
+                        </form>
+                    }
+                </div>
+            }
+            @if (!Model.CanAdvance && !Model.CanCancel)
+            {
+                <p class="admin-order-workflow__terminal mb-0">Đơn hàng đã ở trạng thái kết thúc, không còn thao tác xử lý.</p>
+            }
+        </section>
+
+        <section class="order-details-section" aria-labelledby="delivery-title">
+            <h2 id="delivery-title">Thông tin nhận hàng</h2>
+            <dl class="order-details-definition-list">
+                <div><dt>Hình thức</dt><dd>@OrderDisplay.Fulfillment(Model.FulfillmentMethod)</dd></div>
+                <div><dt>Cửa hàng</dt><dd><strong>@Model.StoreName</strong><br /><span>@Model.StoreAddress · @Model.StorePhone</span></dd></div>
+                <div><dt>Người nhận</dt><dd>@Model.RecipientName<br /><span>@Model.RecipientPhone</span></dd></div>
+                @if (Model.FulfillmentMethod == FulfillmentMethod.Delivery)
+                {
+                    <div><dt>Địa chỉ</dt><dd>@Model.DeliveryAddress</dd></div>
+                }
+                <div><dt>Thanh toán</dt><dd>@OrderDisplay.Payment(Model.PaymentMethod)</dd></div>
+                @if (!string.IsNullOrWhiteSpace(Model.OrderNote))
+                {
+                    <div><dt>Ghi chú</dt><dd>@Model.OrderNote</dd></div>
+                }
+            </dl>
+        </section>
+
+        <section class="order-details-section" aria-labelledby="items-title">
+            <h2 id="items-title">Sản phẩm đã chọn</h2>
+            <div class="order-details-items">
+                @foreach (var item in Model.Items)
+                {
+                    <article class="order-details-item">
+                        <div class="order-details-item__heading">
+                            <div>
+                                <h3>@item.ProductName</h3>
+                                <div class="order-details-item__configuration" aria-label="Tùy chọn món">
+                                    <span>@item.SizeName</span>
+                                    @if (item.SugarPercentage.HasValue) { <span>Đường @item.SugarPercentage%</span> }
+                                    @if (item.IcePercentage.HasValue) { <span>Đá @item.IcePercentage%</span> }
+                                </div>
+                            </div>
+                            <div class="order-details-item__total">
+                                <span>Thành tiền</span>
+                                <strong>@item.LineTotal.ToString("N0") đ</strong>
+                            </div>
+                        </div>
+                        @if (item.Toppings.Count > 0)
+                        {
+                            <div class="order-details-item__toppings">
+                                <p class="order-details-item__label">Topping đã thêm</p>
+                                <ul>
+                                    @foreach (var topping in item.Toppings)
+                                    {
+                                        <li><span>@topping.ToppingName</span><strong>+@topping.UnitPrice.ToString("N0") đ / món</strong></li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        <div class="order-details-item__breakdown">
+                            <div><span>Giá cơ bản</span><strong>@item.UnitPrice.ToString("N0") đ / món</strong></div>
+                            <div><span>Số lượng</span><strong>@item.Quantity</strong></div>
+                        </div>
+                    </article>
+                }
+            </div>
+        </section>
+    </div>
+
+    <aside class="order-details-summary" aria-label="Tổng thanh toán">
+        <h2>Tổng thanh toán</h2>
+        <dl class="checkout-totals">
+            <div><dt>Tạm tính</dt><dd>@Model.Subtotal.ToString("N0") đ</dd></div>
+            <div><dt>Phí giao hàng</dt><dd>@Model.DeliveryFee.ToString("N0") đ</dd></div>
+            <div class="checkout-totals__total"><dt>Tổng cộng</dt><dd>@Model.TotalAmount.ToString("N0") đ</dd></div>
+        </dl>
+    </aside>
+</div>

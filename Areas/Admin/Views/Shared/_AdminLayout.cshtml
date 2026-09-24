@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản trị MilkTeaWeb</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="admin-body">
+    <a class="skip-link" href="#admin-main-content">Chuyển đến nội dung chính</a>
+
+    <aside class="admin-sidebar d-none d-lg-flex" aria-label="Điều hướng quản trị">
+        <div>
+            <span class="admin-sidebar__brand">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M6 8h12l-1 11H7L6 8Z" /><path d="M8 8a4 4 0 0 1 8 0M9 12h.01M12 14h.01M15 12h.01" /><path d="M15.5 4.5c1.7-1.7 3.4-1.4 4-1.3-.1.7-.5 2.3-2.1 3.1-1 .5-1.7.3-2.2.1" /></svg>
+                </span>
+                <span class="brand-wordmark">MilkTeaWeb</span>
+            </span>
+            <p class="admin-sidebar__label">Khu vực quản trị</p>
+        </div>
+        <nav class="admin-sidebar__nav">
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="4" y="4" width="6" height="6" rx="1" /><rect x="14" y="4" width="6" height="6" rx="1" /><rect x="4" y="14" width="6" height="6" rx="1" /><rect x="14" y="14" width="6" height="6" rx="1" /></svg></span><span>Tổng quan</span></a>
+            <a asp-area="Admin" asp-controller="Categories" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 6h16M4 12h16M4 18h10" /></svg></span><span>Danh mục</span></a>
+            <a asp-area="Admin" asp-controller="Products" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M6 9h12l-1 10H7L6 9ZM8 9a4 4 0 0 1 8 0M9 13h.01M15 13h.01" /></svg></span><span>Sản phẩm</span></a>
+            <a asp-area="Admin" asp-controller="Sizes" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="m4 16 12-12 4 4L8 20H4v-4ZM13 7l4 4M8 16h.01M11 13h.01M14 10h.01" /></svg></span><span>Kích cỡ</span></a>
+            <a asp-area="Admin" asp-controller="Toppings" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="8" cy="8" r="2.5" /><circle cx="16" cy="8" r="2.5" /><circle cx="8" cy="16" r="2.5" /><circle cx="16" cy="16" r="2.5" /></svg></span><span>Topping</span></a>
+            <a asp-area="Admin" asp-controller="Stores" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 10h16v10H4zM6 10l1-5h10l1 5M8 14h3v6H8zM15 14h3M15 17h3" /></svg></span><span>Cửa hàng</span></a>
+            <a asp-area="Admin" asp-controller="Orders" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M7 3h10v18H7zM10 7h4M10 11h4M10 15h2" /><path d="m4 7 3-3M17 18l3-3" /></svg></span><span>Đơn hàng</span></a>
+            <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                <button class="btn btn-outline-light w-100 text-start" type="submit"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M10 5H5v14h5M14 8l4 4-4 4M18 12H9" /></svg></span><span>Đăng xuất</span></button>
+            </form>
+            <a class="admin-sidebar__link--public-home" asp-area="" asp-controller="Home" asp-action="Index" aria-label="Trang chủ" title="Trang chủ"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="m4 11 8-7 8 7M6 10v9h12v-9M10 19v-5h4v5" /></svg></span></a>
+        </nav>
+    </aside>
+
+    <div class="offcanvas offcanvas-start admin-offcanvas" tabindex="-1" id="admin-navigation" aria-labelledby="admin-navigation-title">
+        <div class="offcanvas-header">
+            <div>
+                <h2 class="offcanvas-title h5 mb-0" id="admin-navigation-title">
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false"><path d="M6 8h12l-1 11H7L6 8Z" /><path d="M8 8a4 4 0 0 1 8 0M9 12h.01M12 14h.01M15 12h.01" /><path d="M15.5 4.5c1.7-1.7 3.4-1.4 4-1.3-.1.7-.5 2.3-2.1 3.1-1 .5-1.7.3-2.2.1" /></svg>
+                    </span>
+                    <span class="brand-wordmark">MilkTeaWeb</span>
+                </h2>
+                <p class="admin-sidebar__label mb-0">Khu vực quản trị</p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Đóng điều hướng"></button>
+        </div>
+        <div class="offcanvas-body">
+            <nav class="admin-sidebar__nav" aria-label="Điều hướng quản trị trên thiết bị nhỏ">
+                <a asp-area="Admin" asp-controller="Home" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><rect x="4" y="4" width="6" height="6" rx="1" /><rect x="14" y="4" width="6" height="6" rx="1" /><rect x="4" y="14" width="6" height="6" rx="1" /><rect x="14" y="14" width="6" height="6" rx="1" /></svg></span><span>Tổng quan</span></a>
+                <a asp-area="Admin" asp-controller="Categories" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 6h16M4 12h16M4 18h10" /></svg></span><span>Danh mục</span></a>
+                <a asp-area="Admin" asp-controller="Products" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M6 9h12l-1 10H7L6 9ZM8 9a4 4 0 0 1 8 0M9 13h.01M15 13h.01" /></svg></span><span>Sản phẩm</span></a>
+                <a asp-area="Admin" asp-controller="Sizes" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="m4 16 12-12 4 4L8 20H4v-4ZM13 7l4 4M8 16h.01M11 13h.01M14 10h.01" /></svg></span><span>Kích cỡ</span></a>
+                <a asp-area="Admin" asp-controller="Toppings" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="8" cy="8" r="2.5" /><circle cx="16" cy="8" r="2.5" /><circle cx="8" cy="16" r="2.5" /><circle cx="16" cy="16" r="2.5" /></svg></span><span>Topping</span></a>
+                <a asp-area="Admin" asp-controller="Stores" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 10h16v10H4zM6 10l1-5h10l1 5M8 14h3v6H8zM15 14h3M15 17h3" /></svg></span><span>Cửa hàng</span></a>
+                <a asp-area="Admin" asp-controller="Orders" asp-action="Index"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M7 3h10v18H7zM10 7h4M10 11h4M10 15h2" /><path d="m4 7 3-3M17 18l3-3" /></svg></span><span>Đơn hàng</span></a>
+                <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                    <button class="btn btn-outline-light w-100 text-start" type="submit"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M10 5H5v14h5M14 8l4 4-4 4M18 12H9" /></svg></span><span>Đăng xuất</span></button>
+                </form>
+                <a class="admin-sidebar__link--public-home" asp-area="" asp-controller="Home" asp-action="Index" aria-label="Trang chủ" title="Trang chủ"><span class="admin-sidebar__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="m4 11 8-7 8 7M6 10v9h12v-9M10 19v-5h4v5" /></svg></span></a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="admin-content-shell">
+        <header class="admin-mobile-header d-lg-none">
+            <button class="btn btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#admin-navigation" aria-controls="admin-navigation">Điều hướng</button>
+            <a class="admin-mobile-header__brand" asp-area="Admin" asp-controller="Home" asp-action="Index">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M6 8h12l-1 11H7L6 8Z" /><path d="M8 8a4 4 0 0 1 8 0M9 12h.01M12 14h.01M15 12h.01" /><path d="M15.5 4.5c1.7-1.7 3.4-1.4 4-1.3-.1.7-.5 2.3-2.1 3.1-1 .5-1.7.3-2.2.1" /></svg>
+                </span>
+                <span class="brand-wordmark">MilkTeaWeb</span>
+            </a>
+        </header>
+
+        <div class="container-fluid admin-feedback-region">
+            <partial name="_Feedback" />
+        </div>
+
+        <main id="admin-main-content" class="admin-main-content">
+            @RenderBody()
+        </main>
+    </div>
+
+    <partial name="_ConfirmationModal" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

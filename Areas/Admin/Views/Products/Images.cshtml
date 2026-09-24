@@ -1,0 +1,52 @@
+@model ProductImagesViewModel
+@{
+    ViewData["Title"] = "Ảnh sản phẩm";
+}
+
+<section class="admin-images" aria-labelledby="images-title">
+    <div class="admin-page-heading">
+        <div><p class="eyebrow">Sản phẩm</p><h1 id="images-title">Ảnh @Model.ProductName</h1><p class="text-muted mb-0">Ảnh đầu tiên theo thứ tự hiển thị sẽ được dùng làm ảnh đại diện.</p></div>
+        <div class="d-flex flex-wrap gap-2"><a class="btn btn-secondary" asp-action="Configuration" asp-route-id="@Model.ProductId">Cấu hình</a><a class="btn btn-secondary" asp-action="Edit" asp-route-id="@Model.ProductId">Thông tin cơ bản</a></div>
+    </div>
+
+    <section class="admin-configuration-section" aria-labelledby="upload-title">
+        <div class="admin-section-heading"><div><p id="upload-title" class="eyebrow">Tải lên</p><h2>Thêm ảnh mới</h2></div><p>JPG, PNG hoặc WEBP; tối đa 5 MB mỗi ảnh.</p></div>
+        <form method="post" asp-action="UploadImage" asp-route-id="@Model.ProductId" enctype="multipart/form-data" class="admin-image-upload" novalidate>
+            <div asp-validation-summary="All" class="validation-summary-valid admin-image-upload__validation" role="alert"></div>
+            <div class="admin-upload-control">
+                <input asp-for="Upload.File" class="visually-hidden" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" data-image-preview-input data-image-preview-target="upload-preview" data-image-file-name-target="upload-file-name" />
+                <label class="admin-upload-dropzone" for="Upload_File">
+                    <span class="admin-upload-dropzone__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M4 16.5V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10.5" /><circle cx="8.5" cy="9" r="1.5" /><path d="m4 16.5 4.5-4.5 3.5 3 2.5-2.5 4.5 4.5M12 19v-6M9.5 15.5 12 13l2.5 2.5" /></svg></span>
+                    <span class="admin-upload-dropzone__copy"><strong>Chọn ảnh để tải lên</strong><small id="upload-file-name" aria-live="polite">Chưa chọn tệp nào</small></span>
+                    <span class="admin-upload-dropzone__button">Chọn tệp</span>
+                </label>
+                <span asp-validation-for="Upload.File" class="field-validation-error"></span>
+            </div>
+            <div id="upload-preview-frame" class="admin-upload-preview-frame" hidden>
+                <img id="upload-preview" class="admin-upload-preview" alt="Xem trước ảnh được chọn" />
+                <button type="button" class="admin-upload-preview-clear" data-image-preview-clear aria-label="Bỏ ảnh đã chọn" title="Bỏ ảnh đã chọn">×</button>
+            </div>
+            <button class="btn btn-primary admin-upload-submit" type="submit">Tải ảnh lên</button>
+        </form>
+    </section>
+
+    <section class="admin-configuration-section" aria-labelledby="gallery-title">
+        <div class="admin-section-heading"><div><p class="eyebrow">Thư viện</p><h2 id="gallery-title">@Model.Images.Count ảnh</h2></div><p>Sắp xếp ảnh theo thứ tự hiển thị; ảnh đầu tiên sẽ làm ảnh đại diện sản phẩm.</p></div>
+        @if (Model.Images.Count == 0)
+        {
+            <div class="empty-state">Chưa có ảnh nào cho sản phẩm này.</div>
+        }
+        else
+        {
+            <div class="admin-image-gallery">
+                @for (var index = 0; index < Model.Images.Count; index++)
+                {
+                    var image = Model.Images[index];
+                    <article class="admin-image-card"><div class="admin-image-card__media"><img src="@image.ImagePath" alt="Ảnh @(index + 1) của @Model.ProductName" loading="lazy" />@if (image.IsFirstDisplayed) { <span class="admin-image-card__primary">Ảnh đại diện</span> }</div><div class="admin-image-card__actions"><form method="post" asp-action="UpdateImageOrder" asp-route-id="@Model.ProductId" class="admin-image-order"><input type="hidden" name="ProductImageId" value="@image.ProductImageId" /><label class="form-label" for="image-order-@image.ProductImageId">Thứ tự hiển thị</label><div class="input-group"><input id="image-order-@image.ProductImageId" class="form-control" name="DisplayOrder" type="number" min="0" value="@image.DisplayOrder" /><button class="btn btn-secondary" type="submit">Lưu thứ tự</button></div></form><form method="post" asp-action="DeleteImage" asp-route-id="@Model.ProductId" data-confirm-form data-confirm-title="Xóa ảnh" data-confirm-message="Ảnh sẽ bị xóa khỏi thư viện sản phẩm." data-confirm-button-label="Xóa ảnh" data-confirm-button-style="btn-danger"><input type="hidden" name="productImageId" value="@image.ProductImageId" /><button class="btn btn-outline-danger w-100" type="submit">Xóa ảnh</button></form></div></article>
+                }
+            </div>
+        }
+    </section>
+</section>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

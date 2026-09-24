@@ -1,0 +1,77 @@
+@model ProductConfigurationViewModel
+@{
+    ViewData["Title"] = "Cấu hình sản phẩm";
+    var sizes = Model.SizeOptions.ToDictionary(x => x.SizeId);
+}
+
+<section class="admin-configuration" aria-labelledby="configuration-title">
+    <div class="admin-page-heading">
+        <div>
+            <p class="eyebrow">Sản phẩm / @Model.CategoryName</p>
+            <h1 id="configuration-title">Cấu hình @Model.ProductName</h1>
+            <p class="text-muted mb-0">Thiết lập kích cỡ, giá bán và các tuỳ chọn khách hàng được phép chọn.</p>
+        </div>
+        <nav class="admin-product-subnav" aria-label="Điều hướng sản phẩm"><a class="btn btn-secondary" asp-action="Edit" asp-route-id="@Model.ProductId">Thông tin cơ bản</a><a class="btn btn-secondary" asp-action="Images" asp-route-id="@Model.ProductId">Quản lý ảnh</a></nav>
+    </div>
+
+    <div class="admin-sellability @(Model.IsSellable ? "admin-sellability--ready" : "admin-sellability--pending")" role="status">
+        <span class="admin-sellability__label">Trạng thái</span>
+        <span class="admin-sellability__badge"><span class="admin-sellability__dot" aria-hidden="true"></span>@(Model.IsSellable ? "Có thể bán" : "Chưa thể bán")</span>
+        @if (!Model.IsSellable)
+        {
+            <span class="admin-sellability__reason">@Model.SellabilityReason</span>
+        }
+    </div>
+
+    <form class="admin-configuration-form" method="post" novalidate>
+        <div asp-validation-summary="All" class="validation-summary-valid" role="alert"></div>
+
+        <section class="admin-configuration-section" aria-labelledby="sizes-title">
+            <div class="admin-section-heading"><div><p class="eyebrow">Giá bán</p><h2 id="sizes-title">Kích cỡ</h2></div><p>Chọn kích cỡ áp dụng và nhập giá bán tương ứng.</p></div>
+            <span asp-validation-for="Input.Sizes" class="field-validation-error"></span>
+            @if (Model.Input.Sizes.Count == 0)
+            {
+                <p class="text-muted mb-0">Chưa có kích cỡ nào trong catalog.</p>
+            }
+            else
+            {
+                <div class="admin-size-list">
+                    @for (var index = 0; index < Model.Input.Sizes.Count; index++)
+                    {
+                        var row = Model.Input.Sizes[index];
+                        var hasOption = sizes.TryGetValue(row.SizeId, out var option);
+                        <div class="admin-size-row">
+                            <input asp-for="Input.Sizes[index].SizeId" type="hidden" />
+                            <div class="form-check"><input asp-for="Input.Sizes[index].IsSelected" class="form-check-input" data-product-size-toggle data-price-target="product-size-price-@index" /><label class="form-check-label" for="Input_Sizes_@(index)__IsSelected">@(hasOption ? option!.Name : "Kích cỡ không hợp lệ")</label></div>
+                            <div class="admin-size-price"><label class="visually-hidden" for="product-size-price-@index">Giá @((hasOption ? option!.Name : "kích cỡ"))</label><div class="input-group"><input asp-for="Input.Sizes[index].Price" id="product-size-price-@index" class="form-control" inputmode="decimal" disabled="@(!row.IsSelected)" /><span class="input-group-text">đ</span></div><span asp-validation-for="Input.Sizes[index].Price" class="field-validation-error"></span></div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+
+        <section class="admin-configuration-section" aria-labelledby="toppings-title">
+            <div class="admin-section-heading"><div><p class="eyebrow">Tuỳ chọn thêm</p><h2 id="toppings-title">Topping</h2></div><p>Chỉ có thể thêm topping đang hoạt động.</p></div>
+            <span asp-validation-for="Input.SupportedToppingIds" class="field-validation-error"></span>
+            <div class="admin-option-grid">
+                @foreach (var topping in Model.ToppingOptions)
+                {
+                    var disabled = !topping.IsActive && !topping.IsAssigned;
+                    <label class="admin-option @(disabled ? "admin-option--disabled" : "")"><input class="form-check-input" type="checkbox" name="Input.SupportedToppingIds" value="@topping.ToppingId" checked="@topping.IsAssigned" disabled="@disabled" /><span><strong>@topping.Name</strong><small>@topping.Price.ToString("N0") đ @(!topping.IsActive ? "· ngừng hoạt động" : "")</small></span></label>
+                }
+            </div>
+        </section>
+
+        <section class="admin-configuration-section" aria-labelledby="levels-title">
+            <div class="admin-section-heading"><div><p class="eyebrow">Tuỳ chỉnh đồ uống</p><h2 id="levels-title">Mức đường và đá</h2></div><p>Khách hàng chỉ có thể chọn các mức được bật tại đây.</p></div>
+            <div class="admin-level-columns">
+                <fieldset><legend>Mức đường</legend><span asp-validation-for="Input.SupportedSugarLevelIds" class="field-validation-error"></span><div class="admin-option-grid">@foreach (var level in Model.SugarLevelOptions) { <label class="admin-option"><input class="form-check-input" type="checkbox" name="Input.SupportedSugarLevelIds" value="@level.Id" checked="@Model.Input.SupportedSugarLevelIds.Contains(level.Id)" /><span><strong>@level.Percentage%</strong><small>Đường</small></span></label> }</div></fieldset>
+                <fieldset><legend>Mức đá</legend><span asp-validation-for="Input.SupportedIceLevelIds" class="field-validation-error"></span><div class="admin-option-grid">@foreach (var level in Model.IceLevelOptions) { <label class="admin-option"><input class="form-check-input" type="checkbox" name="Input.SupportedIceLevelIds" value="@level.Id" checked="@Model.Input.SupportedIceLevelIds.Contains(level.Id)" /><span><strong>@level.Percentage%</strong><small>Đá</small></span></label> }</div></fieldset>
+            </div>
+        </section>
+
+        <div class="admin-edit-actions admin-configuration-actions"><div class="admin-edit-actions__primary"><button class="btn btn-primary" type="submit">Lưu cấu hình</button></div><div class="admin-edit-actions__navigation"><a class="btn btn-secondary" asp-action="Index">Quay lại sản phẩm</a></div></div>
+    </form>
+</section>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

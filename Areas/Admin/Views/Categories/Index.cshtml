@@ -1,0 +1,27 @@
+@model IReadOnlyList<CategoryListItemViewModel>
+@{
+    ViewData["Title"] = "Danh mục";
+}
+
+<section class="admin-resource-page" aria-labelledby="categories-title">
+    <div class="admin-page-heading">
+        <div><p class="eyebrow">Catalog</p><h1 id="categories-title">Danh mục</h1><p class="mb-0 text-muted">Tổ chức sản phẩm theo nhóm để khách hàng dễ tìm món.</p></div>
+        <a class="btn btn-primary" asp-action="Create">Thêm danh mục</a>
+    </div>
+
+    <div class="admin-resource-overview" aria-label="Tổng quan danh mục"><div><span>Tổng danh mục</span><strong>@Model.Count</strong></div><div class="admin-resource-overview__positive"><span>Đang hoạt động</span><strong>@Model.Count(item => item.IsActive)</strong></div></div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">Chưa có danh mục nào. Hãy tạo danh mục đầu tiên.</div>
+    }
+    else
+    {
+        <div class="table-responsive admin-resource-table-wrap"><table class="table align-middle admin-resource-table"><thead><tr><th scope="col">Tên</th><th scope="col">Trạng thái</th><th scope="col" class="text-end">Thao tác</th></tr></thead><tbody>
+        @foreach (var item in Model)
+        {
+            <tr><td data-label="Tên"><strong>@item.Name</strong></td><td data-label="Trạng thái"><span class="status-badge @(item.IsActive ? "alert-success" : "alert-warning")">@(item.IsActive ? "Đang hoạt động" : "Ngừng hoạt động")</span></td><td data-label="Thao tác"><div class="admin-resource-actions"><a class="btn btn-sm btn-secondary" asp-action="Edit" asp-route-id="@item.CategoryId">Sửa</a>@if (item.IsActive){<form asp-action="SetActive" asp-route-id="@item.CategoryId" method="post" data-confirm-form data-confirm-title="Ngừng hoạt động danh mục" data-confirm-message="Các sản phẩm thuộc danh mục này sẽ không còn có thể bán cho khách hàng." data-confirm-button-label="Ngừng hoạt động" data-confirm-button-style="btn-warning"><button class="btn btn-sm btn-caution" type="submit">Ngừng hoạt động</button></form>}else{<form asp-action="SetActive" asp-route-id="@item.CategoryId" method="post"><button class="btn btn-sm btn-primary" type="submit">Kích hoạt</button></form>}</div></td></tr>
+        }
+        </tbody></table></div>
+    }
+</section>

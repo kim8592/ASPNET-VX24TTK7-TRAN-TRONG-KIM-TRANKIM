@@ -1,0 +1,54 @@
+@model AdminProductInputModel
+@{
+    ViewData["Title"] = "Sửa sản phẩm";
+    var productId = Context.Request.RouteValues["id"];
+}
+
+<section class="account-shell admin-product-edit" aria-labelledby="product-edit-title">
+    <div class="account-card">
+        <div class="account-card__header">
+            <p class="eyebrow">Sản phẩm</p>
+            <h1 id="product-edit-title">Sửa sản phẩm</h1>
+            <nav class="admin-edit-tools" aria-label="Thao tác sản phẩm">
+                <a class="admin-edit-tool" asp-action="Configuration" asp-route-id="@productId" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Cấu hình" aria-label="Cấu hình">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z" /><path d="m19.4 15 .1.1a1.8 1.8 0 0 1-2.5 2.5l-.1-.1a1.8 1.8 0 0 0-3 .9v.2a1.8 1.8 0 0 1-3.6 0v-.2a1.8 1.8 0 0 0-3-.9l-.1.1a1.8 1.8 0 0 1-2.5-2.5l.1-.1a1.8 1.8 0 0 0-.9-3h-.2a1.8 1.8 0 0 1 0-3.6H4a1.8 1.8 0 0 0 .9-3l-.1-.1a1.8 1.8 0 0 1 2.5-2.5l.1.1a1.8 1.8 0 0 0 3-.9v-.2a1.8 1.8 0 0 1 3.6 0V4a1.8 1.8 0 0 0 3 .9l.1-.1a1.8 1.8 0 0 1 2.5 2.5l-.1.1a1.8 1.8 0 0 0 .9 3h.2a1.8 1.8 0 0 1 0 3.6h-.2a1.8 1.8 0 0 0-.9 1Z" /></svg>
+                </a>
+                <a class="admin-edit-tool" asp-action="Images" asp-route-id="@productId" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Ảnh sản phẩm" aria-label="Ảnh sản phẩm">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="17" height="16" rx="2" /><circle cx="8.5" cy="9" r="1.5" /><path d="m4 17 4.5-4.5 3.5 3 2.5-2.5L20.5 17" /></svg>
+                </a>
+            </nav>
+        </div>
+
+        <form method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label is-required">Tên sản phẩm</label>
+                <input asp-for="Name" class="form-control" autocomplete="off" />
+                <span asp-validation-for="Name" class="field-validation-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Mô tả</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="field-validation-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="CategoryId" class="form-label is-required">Danh mục</label>
+                <select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="form-select"><option value="">Chọn danh mục</option></select>
+                <span asp-validation-for="CategoryId" class="field-validation-error"></span>
+            </div>
+            <div class="form-check mb-4">
+                <input asp-for="IsAvailable" class="form-check-input" />
+                <label asp-for="IsAvailable" class="form-check-label">Cho phép bán khi sản phẩm có đủ cấu hình</label>
+            </div>
+
+            <div class="admin-edit-actions">
+                <div class="admin-edit-actions__primary">
+                    <button class="btn btn-primary admin-edit-actions__save" type="submit">Lưu thay đổi</button>
+                    <a class="btn btn-secondary" asp-action="Index">Quay lại</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

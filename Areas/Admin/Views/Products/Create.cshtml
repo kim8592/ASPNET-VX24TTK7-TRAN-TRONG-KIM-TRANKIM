@@ -1,0 +1,8 @@
+@model AdminProductInputModel
+@{
+    ViewData["Title"] = "Thêm sản phẩm";
+}
+
+<section class="account-shell" aria-labelledby="product-create-title"><div class="account-card"><div class="account-card__header"><p class="eyebrow">Sản phẩm</p><h1 id="product-create-title">Thêm sản phẩm</h1><p>Sản phẩm mới có thể được tạo trước khi có cấu hình kích cỡ và giá bán.</p></div><form method="post" novalidate><div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div><div class="mb-3"><label asp-for="Name" class="form-label is-required">Tên sản phẩm</label><input asp-for="Name" class="form-control" autocomplete="off" /><span asp-validation-for="Name" class="field-validation-error"></span></div><div class="mb-3"><label asp-for="Description" class="form-label">Mô tả</label><textarea asp-for="Description" class="form-control"></textarea><span asp-validation-for="Description" class="field-validation-error"></span></div><div class="mb-3"><label asp-for="CategoryId" class="form-label is-required">Danh mục</label><select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="form-select"><option value="">Chọn danh mục</option></select><span asp-validation-for="CategoryId" class="field-validation-error"></span></div><div class="form-check mb-4"><input asp-for="IsAvailable" class="form-check-input" /><label asp-for="IsAvailable" class="form-check-label">Cho phép bán khi sản phẩm có đủ cấu hình</label></div><div class="d-flex gap-2"><button class="btn btn-primary" type="submit">Lưu sản phẩm</button><a class="btn btn-secondary" asp-action="Index">Quay lại</a></div></form></div></section>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

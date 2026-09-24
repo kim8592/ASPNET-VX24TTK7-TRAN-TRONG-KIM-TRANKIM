@@ -1,0 +1,110 @@
+@using MilkTeaWeb.Models.Enums
+@using MilkTeaWeb.ViewModels.Admin.Orders
+@using MilkTeaWeb.ViewModels.Orders
+@model AdminOrderListViewModel
+@{
+    ViewData["Title"] = "Đơn hàng";
+}
+
+<section class="admin-orders-page" aria-labelledby="orders-title">
+    <div class="admin-page-heading">
+        <div>
+            <p class="eyebrow">Vận hành</p>
+            <h1 id="orders-title" class="h2 mb-1">Đơn hàng</h1>
+            <p class="mb-0 text-muted">Theo dõi tiến trình xử lý và xem lại thông tin đơn hàng đã lưu.</p>
+        </div>
+    </div>
+
+    <div class="admin-order-overview" aria-label="Tổng quan đơn hàng">
+        <div>
+            <span>Tổng đơn</span>
+            <strong>@Model.TotalCount</strong>
+        </div>
+        <div class="admin-order-overview__priority">
+            <span>Chờ xử lý</span>
+            <strong>@Model.PendingCount</strong>
+        </div>
+    </div>
+
+    <form class="admin-order-filters" method="get" asp-action="Index" aria-label="Lọc đơn hàng">
+        <div>
+            <label class="form-label" for="order-status-filter">Trạng thái</label>
+            <select class="form-select" id="order-status-filter" name="status">
+                <option value="">Tất cả trạng thái</option>
+                @foreach (var status in Enum.GetValues<OrderStatus>())
+                {
+                    if (Model.Filter.Status == status)
+                    {
+                        <option value="@((int)status)" selected>@OrderDisplay.Status(status)</option>
+                    }
+                    else
+                    {
+                        <option value="@((int)status)">@OrderDisplay.Status(status)</option>
+                    }
+                }
+            </select>
+        </div>
+        <div>
+            <label class="form-label" for="order-store-filter">Cửa hàng</label>
+            <select class="form-select" id="order-store-filter" name="storeId">
+                <option value="">Tất cả cửa hàng</option>
+                @foreach (var store in Model.Stores)
+                {
+                    var storeLabel = store.IsActive ? store.Name : $"{store.Name} (ngừng hoạt động)";
+                    if (Model.Filter.StoreId == store.StoreId)
+                    {
+                        <option value="@store.StoreId" selected>@storeLabel</option>
+                    }
+                    else
+                    {
+                        <option value="@store.StoreId">@storeLabel</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="admin-order-filters__actions">
+            <button class="btn btn-primary" type="submit">Áp dụng</button>
+            <a class="btn btn-secondary" asp-action="Index">Xóa bộ lọc</a>
+        </div>
+    </form>
+
+    @if (Model.Orders.Count == 0)
+    {
+        <div class="empty-state admin-orders-empty-state">
+            <h2>Chưa có đơn hàng phù hợp.</h2>
+            <p>Hãy thử thay đổi bộ lọc hoặc kiểm tra lại sau.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive admin-orders-table-wrap">
+            <table class="table align-middle admin-orders-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Đơn hàng</th>
+                        <th scope="col">Thời gian đặt</th>
+                        <th scope="col">Cửa hàng</th>
+                        <th scope="col">Nhận hàng</th>
+                        <th scope="col">Trạng thái</th>
+                        <th scope="col" class="text-end">Tổng cộng</th>
+                        <th scope="col" class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr class="@(order.OrderStatus == OrderStatus.Pending ? "admin-order-row--priority" : string.Empty)">
+                            <td data-label="Đơn hàng"><strong>#@order.OrderId</strong></td>
+                            <td data-label="Thời gian đặt">@order.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy, HH:mm")</td>
+                            <td data-label="Cửa hàng">@order.StoreName</td>
+                            <td data-label="Nhận hàng">@OrderDisplay.Fulfillment(order.FulfillmentMethod)</td>
+                            <td data-label="Trạng thái"><span class="order-status order-status--@order.OrderStatus.ToString().ToLowerInvariant()">@OrderDisplay.Status(order.OrderStatus, order.FulfillmentMethod)</span></td>
+                            <td class="text-end" data-label="Tổng cộng"><strong>@order.TotalAmount.ToString("N0") đ</strong></td>
+                            <td class="text-end" data-label="Thao tác"><a class="btn btn-sm btn-secondary" asp-action="Details" asp-route-id="@order.OrderId">Xem chi tiết</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
