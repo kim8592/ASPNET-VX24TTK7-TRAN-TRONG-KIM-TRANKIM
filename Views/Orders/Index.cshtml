@@ -1,0 +1,106 @@
+@using MilkTeaWeb.ViewModels.Orders
+@model OrderHistoryViewModel
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<section class="shop-page-heading shop-page-heading--compact">
+    <p class="eyebrow">LỊCH SỬ ĐẶT HÀNG</p>
+    <h1>Đơn hàng của tôi</h1>
+    <p>Theo dõi các đơn trà sữa bạn đã đặt và xem lại thông tin chi tiết khi cần.</p>
+</section>
+
+<form asp-action="Index" method="get" class="orders-filter" aria-label="Lọc đơn hàng theo trạng thái">
+    <div class="orders-filter__field">
+        <label for="order-status-filter">Lọc theo trạng thái</label>
+        <select id="order-status-filter" name="status" class="form-select">
+            @if (!Model.HasStatusFilter)
+            {
+                <option value="" selected>Tất cả trạng thái</option>
+            }
+            else
+            {
+                <option value="">Tất cả trạng thái</option>
+            }
+            @foreach (var option in Model.StatusOptions)
+            {
+                if (Model.SelectedStatus == option.Status)
+                {
+                    <option value="@option.Status" selected>@option.Label</option>
+                }
+                else
+                {
+                    <option value="@option.Status">@option.Label</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="orders-filter__actions">
+        <button type="submit" class="btn btn-primary">Lọc đơn hàng</button>
+        @if (Model.HasStatusFilter)
+        {
+            <a class="btn btn-secondary orders-filter__clear" asp-action="Index">Xóa bộ lọc</a>
+        }
+    </div>
+</form>
+
+@if (Model.Orders.Count > 0)
+{
+    <div class="orders-overview" aria-label="Tổng quan lịch sử đơn hàng">
+        <span><strong>@Model.Orders.Count</strong> đơn hàng</span>
+        <span aria-hidden="true">·</span>
+        @if (Model.SelectedStatus is { } selectedStatus)
+        {
+            <span>Đang lọc: @OrderDisplay.Status(selectedStatus)</span>
+        }
+        else
+        {
+            <span>Cập nhật theo trạng thái mới nhất</span>
+        }
+    </div>
+}
+
+@if (Model.Orders.Count == 0)
+{
+    <section class="orders-empty-state">
+        <span class="orders-empty-state__icon" aria-hidden="true">☕</span>
+        @if (Model.HasStatusFilter)
+        {
+            <h2>Chưa có đơn hàng ở trạng thái này.</h2>
+            <p>Hãy thử chọn trạng thái khác hoặc xem lại toàn bộ lịch sử đơn hàng.</p>
+        }
+        else
+        {
+            <h2>Bạn chưa có đơn hàng nào.</h2>
+            <p>Khám phá menu và chọn một ly trà sữa đúng gu của bạn.</p>
+        }
+        <a class="btn btn-primary" asp-controller="Products" asp-action="Index">Xem menu</a>
+        @if (Model.HasStatusFilter)
+        {
+            <a class="btn btn-secondary" asp-action="Index">Xem tất cả đơn hàng</a>
+        }
+    </section>
+}
+else
+{
+    <section class="orders-list" aria-label="Danh sách đơn hàng">
+        @foreach (var order in Model.Orders)
+        {
+            <article class="order-history-card">
+                <div class="order-history-card__main">
+                    <div>
+                        <p class="order-history-card__id">Đơn hàng #@order.OrderId</p>
+                        <p class="order-history-card__time">@order.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy, HH:mm")</p>
+                    </div>
+                    <span class="order-status order-status--@order.OrderStatus.ToString().ToLowerInvariant()">@OrderDisplay.Status(order.OrderStatus, order.FulfillmentMethod)</span>
+                </div>
+                <dl class="order-history-card__meta">
+                    <div><dt>Cửa hàng</dt><dd>@order.StoreName</dd></div>
+                    <div><dt>Nhận hàng</dt><dd>@OrderDisplay.Fulfillment(order.FulfillmentMethod)</dd></div>
+                    <div><dt>Tổng cộng</dt><dd>@order.TotalAmount.ToString("N0") đ</dd></div>
+                </dl>
+                <a class="btn btn-secondary" asp-action="Details" asp-route-id="@order.OrderId">Xem chi tiết</a>
+            </article>
+        }
+    </section>
+}

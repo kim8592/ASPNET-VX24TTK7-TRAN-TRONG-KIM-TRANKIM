@@ -1,0 +1,125 @@
+@using MilkTeaWeb.Models.Enums
+@using MilkTeaWeb.ViewModels.Orders
+@model OrderDetailsViewModel
+@{
+    ViewData["Title"] = $"Đơn hàng #{Model.OrderId}";
+}
+
+<section class="shop-page-heading shop-page-heading--compact order-details-heading">
+    <a class="back-link order-details-back-link" asp-action="Index">
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
+        <span>Đơn hàng của tôi</span>
+    </a>
+    <div class="order-details-heading__row">
+        <div>
+            <p class="eyebrow">ĐƠN HÀNG #@Model.OrderId</p>
+            <h1>Chi tiết đơn hàng</h1>
+            <p>Đặt lúc @Model.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy, HH:mm")</p>
+        </div>
+        <span class="order-status order-status--@Model.OrderStatus.ToString().ToLowerInvariant()" role="status">@OrderDisplay.Status(Model.OrderStatus, Model.FulfillmentMethod)</span>
+    </div>
+</section>
+
+<div class="order-details-layout">
+    <div class="order-details-content">
+        <section class="order-status-timeline" aria-labelledby="order-status-timeline-title">
+            <div class="order-status-timeline__heading">
+                <div>
+                    <p class="eyebrow">TIẾN ĐỘ ĐƠN HÀNG</p>
+                    <h2 id="order-status-timeline-title">Đơn hàng đang ở bước nào?</h2>
+                </div>
+                <span class="order-status-timeline__current">@OrderDisplay.Status(Model.OrderStatus, Model.FulfillmentMethod)</span>
+            </div>
+            <ol class="order-status-timeline__list">
+                @foreach (var timelineItem in Model.StatusTimeline)
+                {
+                    var timelineState = timelineItem.IsCurrent ? "is-current" : timelineItem.IsCompleted ? "is-completed" : "is-upcoming";
+                    var terminalClass = timelineItem.IsTerminal ? "is-terminal" : string.Empty;
+                    <li class="order-status-timeline__item @timelineState @terminalClass" aria-current="@(timelineItem.IsCurrent ? "step" : null)">
+                        <span class="order-status-timeline__marker" aria-hidden="true">
+                            @(timelineItem.IsCompleted ? "✓" : timelineItem.IsCurrent ? "•" : "")
+                        </span>
+                        <div class="order-status-timeline__copy">
+                            <strong>@timelineItem.Label</strong>
+                            <span>@timelineItem.Description</span>
+                        </div>
+                    </li>
+                }
+            </ol>
+        </section>
+
+        <section class="order-details-section">
+            <h2>Thông tin nhận hàng</h2>
+            <dl class="order-details-definition-list">
+                <div><dt>Hình thức</dt><dd>@OrderDisplay.Fulfillment(Model.FulfillmentMethod)</dd></div>
+                <div><dt>Cửa hàng</dt><dd><strong>@Model.StoreName</strong><br /><span>@Model.StoreAddress · @Model.StorePhone</span></dd></div>
+                <div><dt>Người nhận</dt><dd>@Model.RecipientName<br /><span>@Model.RecipientPhone</span></dd></div>
+                @if (Model.FulfillmentMethod == FulfillmentMethod.Delivery)
+                {
+                    <div><dt>Địa chỉ</dt><dd>@Model.DeliveryAddress</dd></div>
+                }
+                <div><dt>Thanh toán</dt><dd>@OrderDisplay.Payment(Model.PaymentMethod)</dd></div>
+                @if (!string.IsNullOrWhiteSpace(Model.OrderNote))
+                {
+                    <div><dt>Ghi chú</dt><dd>@Model.OrderNote</dd></div>
+                }
+            </dl>
+        </section>
+
+        <section class="order-details-section">
+            <h2>Sản phẩm đã chọn</h2>
+            <div class="order-details-items">
+                @foreach (var item in Model.Items)
+                {
+                    <article class="order-details-item">
+                        <div class="order-details-item__heading">
+                            <div>
+                                <h3>@item.ProductName</h3>
+                                <div class="order-details-item__configuration" aria-label="Tùy chọn món">
+                                    <span>@item.SizeName</span>
+                                    @if (item.SugarPercentage.HasValue) { <span>Đường @item.SugarPercentage%</span> }
+                                    @if (item.IcePercentage.HasValue) { <span>Đá @item.IcePercentage%</span> }
+                                </div>
+                            </div>
+                            <div class="order-details-item__total">
+                                <span>Thành tiền</span>
+                                <strong>@item.LineTotal.ToString("N0") đ</strong>
+                            </div>
+                        </div>
+                        @if (item.Toppings.Count > 0)
+                        {
+                            <div class="order-details-item__toppings">
+                                <p class="order-details-item__label">Topping đã thêm</p>
+                                <ul>
+                                    @foreach (var topping in item.Toppings)
+                                    {
+                                        <li><span>@topping.ToppingName</span><strong>+@topping.UnitPrice.ToString("N0") đ / món</strong></li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        <div class="order-details-item__breakdown">
+                            <div><span>Giá cơ bản</span><strong>@item.UnitPrice.ToString("N0") đ / món</strong></div>
+                            <div><span>Số lượng</span><strong>@item.Quantity</strong></div>
+                        </div>
+                    </article>
+                }
+            </div>
+        </section>
+    </div>
+
+    <aside class="order-details-summary" aria-label="Tổng thanh toán">
+        <h2>Tổng thanh toán</h2>
+        <dl class="checkout-totals">
+            <div><dt>Tạm tính</dt><dd>@Model.Subtotal.ToString("N0") đ</dd></div>
+            <div><dt>Phí giao hàng</dt><dd>@Model.DeliveryFee.ToString("N0") đ</dd></div>
+            <div class="checkout-totals__total"><dt>Tổng cộng</dt><dd>@Model.TotalAmount.ToString("N0") đ</dd></div>
+        </dl>
+        @if (Model.CanCancel)
+        {
+            <form asp-action="Cancel" asp-route-id="@Model.OrderId" method="post" data-confirm-form data-confirm-title="Hủy đơn hàng?" data-confirm-message="Đơn hàng đang chờ xác nhận sẽ được hủy và không thể khôi phục vào giỏ hàng." data-confirm-button-label="Hủy đơn hàng" data-confirm-button-style="destructive">
+                <button class="btn btn-danger w-100" type="submit">Hủy đơn hàng</button>
+            </form>
+        }
+    </aside>
+</div>

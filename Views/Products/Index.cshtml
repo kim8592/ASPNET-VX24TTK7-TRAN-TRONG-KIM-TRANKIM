@@ -1,0 +1,131 @@
+@model MilkTeaWeb.ViewModels.Products.ProductCatalogViewModel
+@{
+    ViewData["Title"] = "Menu";
+}
+
+<section class="shop-page-heading">
+    <p class="eyebrow">MENU MILKTEAWEB</p>
+    <h1>Chọn món bạn yêu thích</h1>
+    <p>Khám phá các món đang sẵn sàng phục vụ và tùy chỉnh theo khẩu vị của bạn.</p>
+</section>
+
+<section class="catalog-toolbar" aria-label="Tìm kiếm và lọc sản phẩm">
+    <form id="catalog-search-form" method="get" class="catalog-search">
+        @if (Model.SelectedCategoryId is int categoryId)
+        {
+            <input type="hidden" name="categoryId" value="@categoryId" />
+        }
+        <label class="visually-hidden" for="product-search">Tìm sản phẩm</label>
+        <input id="product-search" class="form-control" type="search" name="search" value="@Model.Search" placeholder="Tìm theo tên đồ uống" />
+        <button class="btn btn-primary catalog-search__submit" type="submit" aria-label="Tìm kiếm và lọc" title="Tìm kiếm và lọc">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="11" cy="11" r="6.5" />
+                <path d="m16 16 4.5 4.5" />
+            </svg>
+        </button>
+    </form>
+    <div class="catalog-filter-row">
+        <div class="catalog-filter-group catalog-filter-group--category" aria-labelledby="catalog-category-label">
+            <p id="catalog-category-label" class="catalog-filter-group__label">Danh mục</p>
+            <div class="catalog-filters" aria-label="Lọc theo danh mục">
+                <a class="catalog-filter @(Model.SelectedCategoryId is null ? "is-active" : string.Empty)" asp-action="Index" asp-route-search="@Model.Search" asp-route-priceRange="@Model.SelectedPriceRangeKey">Tất cả</a>
+                @foreach (var category in Model.Categories)
+                {
+                    <a class="catalog-filter @(Model.SelectedCategoryId == category.CategoryId ? "is-active" : string.Empty)" asp-action="Index" asp-route-categoryId="@category.CategoryId" asp-route-search="@Model.Search" asp-route-priceRange="@Model.SelectedPriceRangeKey">@category.Name</a>
+                }
+            </div>
+        </div>
+        <div class="catalog-filter-group catalog-filter-group--price">
+            <label id="catalog-price-label" class="catalog-filter-group__label" for="catalog-price-range">Khoảng giá</label>
+            <select id="catalog-price-range" class="form-select catalog-price-select" name="priceRange" form="catalog-search-form" aria-labelledby="catalog-price-label" data-catalog-price-filter>
+                <option value="">Tất cả mức giá</option>
+            @foreach (var priceRange in Model.PriceRanges)
+            {
+                <option value="@priceRange.Key" selected="@(Model.SelectedPriceRangeKey == priceRange.Key ? "selected" : null)">@priceRange.Label</option>
+            }
+            </select>
+        </div>
+    </div>
+    @if (Model.HasActiveFilters)
+    {
+        <a class="catalog-reset" asp-action="Index">Xóa bộ lọc</a>
+    }
+</section>
+
+@section Scripts {
+    <script src="~/js/shop.js" asp-append-version="true"></script>
+}
+
+<div class="catalog-results-bar" aria-live="polite">
+    <p><strong>@Model.ResultCount</strong> món phù hợp</p>
+    @if (Model.HasActiveFilters)
+    {
+        <div class="catalog-active-filters" aria-label="Bộ lọc đang áp dụng">
+            @if (!string.IsNullOrWhiteSpace(Model.Search))
+            {
+                <span class="catalog-active-filter">“@Model.Search”</span>
+            }
+            @if (Model.SelectedCategoryName is not null)
+            {
+                <span class="catalog-active-filter">@Model.SelectedCategoryName</span>
+            }
+            @if (Model.SelectedPriceRangeLabel is not null)
+            {
+                <span class="catalog-active-filter">@Model.SelectedPriceRangeLabel</span>
+            }
+        </div>
+    }
+</div>
+
+@if (Model.Products.Count == 0)
+{
+    <section class="empty-state catalog-empty" aria-labelledby="catalog-empty-title">
+        <span class="empty-state__icon" aria-hidden="true">☕</span>
+        @if (Model.HasActiveFilters)
+        {
+            <h2 id="catalog-empty-title">Không tìm thấy sản phẩm phù hợp</h2>
+            <p>Hãy thử điều chỉnh từ khóa, danh mục hoặc khoảng giá.</p>
+        }
+        else
+        {
+            <h2 id="catalog-empty-title">Menu đang được chuẩn bị</h2>
+            <p>Hiện chưa có sản phẩm sẵn sàng bán. Vui lòng quay lại sau.</p>
+        }
+        @if (Model.HasActiveFilters)
+        {
+            <a class="btn btn-secondary" asp-action="Index">Xem tất cả sản phẩm</a>
+        }
+    </section>
+}
+else
+{
+    <section class="product-grid" aria-label="Danh sách sản phẩm">
+        @foreach (var product in Model.Products)
+        {
+            <article class="public-product-card">
+                <a class="public-product-card__image" asp-action="Details" asp-route-id="@product.ProductId" aria-label="Xem @product.Name">
+                    @if (string.IsNullOrWhiteSpace(product.ImagePath))
+                    {
+                        <span class="product-placeholder" role="img" aria-label="Chưa có ảnh sản phẩm">☕</span>
+                    }
+                    else
+                    {
+                        <img src="@product.ImagePath" alt="@product.Name" loading="lazy" decoding="async" />
+                    }
+                </a>
+                <div class="public-product-card__content">
+                    <p class="public-product-card__category">@product.CategoryName</p>
+                    <h2><a asp-action="Details" asp-route-id="@product.ProductId">@product.Name</a></h2>
+                    @if (!string.IsNullOrWhiteSpace(product.Description))
+                    {
+                        <p class="public-product-card__description">@product.Description</p>
+                    }
+                    <div class="public-product-card__footer">
+                        <strong>Từ @product.StartingPrice.ToString("N0") đ</strong>
+                        <a asp-action="Details" asp-route-id="@product.ProductId">Xem chi tiết <span aria-hidden="true">→</span></a>
+                    </div>
+                </div>
+            </article>
+        }
+    </section>
+}

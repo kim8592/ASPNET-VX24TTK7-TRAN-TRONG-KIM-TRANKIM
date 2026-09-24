@@ -1,0 +1,22 @@
+@{
+    var feedbackMessages = new[]
+    {
+        new { Key = "Success", CssClass = "alert-success", Label = "Thành công", Live = "polite" },
+        new { Key = "Info", CssClass = "alert-info", Label = "Thông tin", Live = "polite" },
+        new { Key = "Warning", CssClass = "alert-warning", Label = "Lưu ý", Live = "polite" },
+        new { Key = "Error", CssClass = "alert-danger", Label = "Lỗi", Live = "assertive" }
+    };
+}
+
+@foreach (var feedback in feedbackMessages)
+{
+    var message = TempData[feedback.Key] as string;
+
+    if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="alert @feedback.CssClass alert-dismissible fade show @(feedback.Key == "Success" ? "js-auto-dismiss" : "")" role="alert" aria-live="@feedback.Live">
+            <strong>@feedback.Label:</strong> @message
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng thông báo"></button>
+        </div>
+    }
+}

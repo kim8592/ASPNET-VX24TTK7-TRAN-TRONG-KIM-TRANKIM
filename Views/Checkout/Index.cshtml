@@ -1,0 +1,103 @@
+@using System.Globalization
+@using MilkTeaWeb.Models.Enums
+@model MilkTeaWeb.ViewModels.Checkout.CheckoutViewModel
+@{
+    ViewData["Title"] = "Thanh toán";
+}
+
+<section class="shop-page-heading shop-page-heading--compact">
+    <p class="eyebrow">HOÀN TẤT LỰA CHỌN</p>
+    <h1>Thông tin nhận hàng</h1>
+    <p>Kiểm tra thông tin liên hệ, chọn cửa hàng và hình thức nhận hàng phù hợp.</p>
+</section>
+
+<form class="checkout-layout" asp-action="Review" method="post" data-checkout-form data-delivery-fee="@Model.DeliveryFee.ToString(CultureInfo.InvariantCulture)" data-subtotal="@Model.Subtotal.ToString(CultureInfo.InvariantCulture)">
+    <div class="checkout-form">
+        <div asp-validation-summary="ModelOnly" class="validation-summary-errors" role="alert" tabindex="-1" data-validation-summary></div>
+        <div class="checkout-form__progress" role="status"><span>01</span><div><strong>Thông tin nhận hàng</strong><small>Chọn cửa hàng và hình thức nhận món trước khi kiểm tra đơn.</small></div></div>
+
+        <section class="checkout-form__section" aria-labelledby="checkout-store-title">
+            <h2 id="checkout-store-title">Cửa hàng nhận đơn</h2>
+            <label asp-for="Input.StoreId">Chọn cửa hàng</label>
+            <select asp-for="Input.StoreId" class="form-select" aria-describedby="Input_StoreId-error">
+                <option value="">Chọn cửa hàng gần bạn</option>
+                @foreach (var store in Model.Stores)
+                {
+                    <option value="@store.StoreId">@store.Name — @store.Address</option>
+                }
+            </select>
+            <span asp-validation-for="Input.StoreId" class="field-validation-error" id="Input_StoreId-error"></span>
+        </section>
+
+        <section class="checkout-form__section" aria-labelledby="checkout-fulfillment-title">
+            <h2 id="checkout-fulfillment-title">Hình thức nhận hàng</h2>
+            <div class="checkout-fulfillment-options">
+                <label class="checkout-fulfillment-option">
+                    <input asp-for="Input.FulfillmentMethod" type="radio" value="@FulfillmentMethod.Pickup" data-fulfillment="Pickup" />
+                    <span><strong>Nhận tại cửa hàng</strong><small>Thanh toán khi nhận món</small></span>
+                </label>
+                <label class="checkout-fulfillment-option">
+                    <input asp-for="Input.FulfillmentMethod" type="radio" value="@FulfillmentMethod.Delivery" data-fulfillment="Delivery" />
+                    <span><strong>Giao tận nơi</strong><small>Phí giao hàng được cập nhật ở phần tóm tắt</small></span>
+                </label>
+            </div>
+            <span asp-validation-for="Input.FulfillmentMethod" class="field-validation-error" id="Input_FulfillmentMethod-error"></span>
+        </section>
+
+        <section class="checkout-form__section" aria-labelledby="checkout-recipient-title">
+            <h2 id="checkout-recipient-title">Thông tin người nhận</h2>
+            <div class="checkout-field-grid">
+                <div>
+                    <label asp-for="Input.RecipientName">Họ và tên</label>
+                    <input asp-for="Input.RecipientName" class="form-control" autocomplete="name" aria-describedby="Input_RecipientName-error" />
+                    <span asp-validation-for="Input.RecipientName" class="field-validation-error" id="Input_RecipientName-error"></span>
+                </div>
+                <div>
+                    <label asp-for="Input.RecipientPhone">Số điện thoại</label>
+                    <input asp-for="Input.RecipientPhone" class="form-control" autocomplete="tel" inputmode="tel" aria-describedby="Input_RecipientPhone-error" />
+                    <span asp-validation-for="Input.RecipientPhone" class="field-validation-error" id="Input_RecipientPhone-error"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="checkout-form__section" data-delivery-address-section aria-labelledby="checkout-address-title">
+            <h2 id="checkout-address-title">Địa chỉ giao hàng</h2>
+            <label asp-for="Input.DeliveryAddress">Địa chỉ cụ thể</label>
+            <textarea asp-for="Input.DeliveryAddress" class="form-control" rows="3" autocomplete="street-address" aria-describedby="Input_DeliveryAddress-error"></textarea>
+            <span asp-validation-for="Input.DeliveryAddress" class="field-validation-error" id="Input_DeliveryAddress-error"></span>
+            <p class="checkout-form__hint">Chỉ cần khi chọn giao tận nơi.</p>
+        </section>
+
+        <section class="checkout-form__section" aria-labelledby="checkout-note-title">
+            <h2 id="checkout-note-title">Ghi chú cho cửa hàng <span>(không bắt buộc)</span></h2>
+            <label class="visually-hidden" asp-for="Input.OrderNote">Ghi chú</label>
+            <textarea asp-for="Input.OrderNote" class="form-control" rows="3" maxlength="500" placeholder="Ví dụ: gọi trước khi giao hàng"></textarea>
+            <span asp-validation-for="Input.OrderNote" class="field-validation-error" id="Input_OrderNote-error"></span>
+        </section>
+
+        <div class="checkout-form__actions">
+            <a class="btn btn-secondary" asp-controller="Cart" asp-action="Index">Quay lại giỏ hàng</a>
+            <button class="btn btn-primary" type="submit" data-submit-loading>Xem lại đơn hàng</button>
+        </div>
+    </div>
+
+    <aside class="checkout-summary" aria-label="Tóm tắt đơn hàng">
+        <h2>Đơn hàng của bạn</h2>
+        <div class="checkout-summary__lines">
+            @foreach (var item in Model.Items)
+            {
+                <partial name="_CartLineSummary" model="item" />
+            }
+        </div>
+        <dl class="checkout-totals">
+            <div><dt>Tạm tính</dt><dd data-checkout-subtotal aria-live="polite">@Model.Subtotal.ToString("N0") đ</dd></div>
+            <div><dt>Phí giao hàng</dt><dd data-checkout-delivery-fee aria-live="polite">—</dd></div>
+            <div class="checkout-totals__total"><dt>Tổng cộng</dt><dd data-checkout-total aria-live="polite">@Model.Subtotal.ToString("N0") đ</dd></div>
+        </dl>
+        <p class="checkout-summary__hint" data-checkout-payment-preview>Chọn hình thức nhận hàng để xem phương thức thanh toán.</p>
+    </aside>
+</form>
+
+@section Scripts {
+    <script src="~/js/checkout.js" asp-append-version="true"></script>
+}

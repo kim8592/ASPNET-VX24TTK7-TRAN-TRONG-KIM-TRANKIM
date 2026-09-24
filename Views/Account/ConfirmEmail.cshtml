@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Xác nhận email";
+    var succeeded = ViewData["Succeeded"] is true;
+    var message = ViewData["Message"] as string ?? "Không thể xác nhận email bằng liên kết này.";
+}
+
+<section class="account-shell account-shell--security">
+    <div class="account-card account-card--security">
+        <div class="account-card__header">
+            <p class="eyebrow">Xác nhận email</p>
+            <h1>@(succeeded ? "Xác nhận thành công" : "Không thể xác nhận")</h1>
+            <p>@message</p>
+        </div>
+        <div class="account-result @(succeeded ? "account-result--success" : "account-result--warning")" role="status"><span class="account-result__icon" aria-hidden="true">@(succeeded ? "✓" : "!")</span><p>@(succeeded ? "Tài khoản của bạn đã sẵn sàng để sử dụng." : "Bạn có thể yêu cầu gửi lại một liên kết xác nhận mới.")</p></div>
+        <div class="account-links account-links--result">
+            @if (succeeded)
+            {
+                <a class="account-link--primary" asp-action="Login">Đi tới Đăng nhập</a>
+            }
+            else
+            {
+                <a class="account-link--primary" asp-action="ResendEmailConfirmation">Gửi lại hướng dẫn</a>
+            }
+        </div>
+    </div>
+</section>

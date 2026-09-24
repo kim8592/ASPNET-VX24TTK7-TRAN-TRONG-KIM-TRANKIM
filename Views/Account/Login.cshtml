@@ -1,0 +1,47 @@
+@model LoginInputModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<section class="account-shell">
+    <div class="account-card">
+        <div class="account-card__header">
+            <p class="eyebrow">Tài khoản</p>
+            <h1>Đăng nhập</h1>
+            <p>Đăng nhập để tiếp tục sử dụng tài khoản của bạn.</p>
+        </div>
+        <form asp-action="Login" method="post" novalidate>
+            <input asp-for="ReturnUrl" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="validation-summary-valid" role="alert"></div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label is-required">Email</label>
+                <input asp-for="Email" class="form-control" autocomplete="email" aria-describedby="Login_Email-error" />
+                <span asp-validation-for="Email" class="field-validation-error" id="Login_Email-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label is-required">Mật khẩu</label>
+                <div class="input-group">
+                    <input asp-for="Password" class="form-control" id="login-password" autocomplete="current-password" aria-describedby="Login_Password-error" />
+                    <button class="btn btn-secondary password-toggle" type="button" data-password-toggle="login-password" aria-pressed="false">Hiện</button>
+                </div>
+                <span asp-validation-for="Password" class="field-validation-error" id="Login_Password-error"></span>
+            </div>
+            <div class="form-check mb-3">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label">Ghi nhớ đăng nhập</label>
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Đăng nhập</button>
+        </form>
+        <div class="account-links account-links--login">
+            <a class="account-link--primary" asp-action="Register">Chưa có tài khoản? Tạo tài khoản</a>
+            <div class="account-links__secondary">
+                <a asp-action="ForgotPassword">Quên mật khẩu?</a>
+                <a asp-action="ResendEmailConfirmation">Chưa nhận email xác nhận? Gửi lại</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

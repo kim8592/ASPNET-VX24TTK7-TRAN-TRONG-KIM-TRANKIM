@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MilkTeaWeb</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Poppins:ital,wght@0,600;0,700;0,800;1,600;1,700;1,800&display=swap" rel="stylesheet" />
+    <script>
+        (() => {
+            document.documentElement.classList.add("js");
+
+            try {
+                if (window.localStorage.getItem("milktea-theme") === "dark") {
+                    document.documentElement.dataset.theme = "dark";
+                }
+            } catch {
+                // Keep the default Light theme when storage is unavailable.
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="site-body">
+    <a class="skip-link" href="#main-content">Chuyển đến nội dung chính</a>
+
+    <header class="site-header sticky-top">
+        <nav class="navbar navbar-expand-lg" aria-label="Điều hướng chính">
+            <div class="container site-header__inner">
+                <a class="navbar-brand site-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false"><path d="M6 8h12l-1 11H7L6 8Z" /><path d="M8 8a4 4 0 0 1 8 0M9 12h.01M12 14h.01M15 12h.01" /><path d="M15.5 4.5c1.7-1.7 3.4-1.4 4-1.3-.1.7-.5 2.3-2.1 3.1-1 .5-1.7.3-2.2.1" /></svg>
+                    </span>
+                    <span class="brand-wordmark">MilkTeaWeb</span>
+                </a>
+                <div class="site-header__actions">
+                    @if (!User.IsInRole(RoleNames.Admin))
+                    {
+                        <a class="site-cart-link" asp-area="" asp-controller="Cart" asp-action="Index">
+                            <span class="site-cart-link__icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" focusable="false">
+                                    <path d="M4 5h2l2.1 10.1a1 1 0 0 0 1 .8h8.7a1 1 0 0 0 1-.8L20.5 8H7" />
+                                    <path d="M10 19h.01M17 19h.01" />
+                                    <circle cx="10" cy="19" r="1.2" />
+                                    <circle cx="17" cy="19" r="1.2" />
+                                </svg>
+                            </span>
+                            <span class="site-cart-link__label">Giỏ hàng</span>
+                            @await Component.InvokeAsync("CartBadge")
+                        </a>
+                    }
+                    @if (User.Identity?.IsAuthenticated != true)
+                    {
+                        <div class="site-header__account-actions">
+                            <a class="site-header__account-action" asp-area="" asp-controller="Account" asp-action="Login">Đăng nhập</a>
+                            <a class="site-header__account-action site-header__account-action--primary" asp-area="" asp-controller="Account" asp-action="Register">Đăng ký</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <form class="site-header__logout" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                            <button class="site-header__account-action site-header__account-action--logout" type="submit">Đăng xuất</button>
+                        </form>
+                    }
+                    <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Chuyển sang giao diện tối" title="Chuyển sang giao diện tối">
+                        <span data-theme-icon="moon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false"><path d="M20.5 15.1A8.5 8.5 0 0 1 8.9 3.5 8.5 8.5 0 1 0 20.5 15.1Z" /></svg>
+                        </span>
+                        <span data-theme-icon="sun" aria-hidden="true" hidden>
+                            <svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="3.5" /><path d="M12 2.5v2M12 19.5v2M21.5 12h-2M4.5 12h-2M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4M18.7 18.7l-1.4-1.4M6.7 6.7 5.3 5.3" /></svg>
+                        </span>
+                    </button>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#public-navigation" aria-controls="public-navigation" aria-expanded="false" aria-label="Mở điều hướng">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+                <div id="public-navigation" class="navbar-collapse collapse">
+                    <ul class="navbar-nav ms-lg-auto align-items-lg-center">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Products" asp-action="Index">Sản phẩm</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Quyền riêng tư</a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.IsInRole(RoleNames.Customer) && !User.IsInRole(RoleNames.Admin))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Orders" asp-action="Index">Đơn hàng</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <button class="nav-link dropdown-toggle border-0 bg-transparent" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Tài khoản
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile">Hồ sơ</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ChangePassword">Đổi mật khẩu</a></li>
+                                    </ul>
+                                </li>
+                            }
+                            @if (User.IsInRole(RoleNames.Admin))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index">Quản trị</a>
+                                </li>
+                            }
+                            @if (!User.IsInRole(RoleNames.Customer))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Account" asp-action="ChangePassword">Đổi mật khẩu</a>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container site-feedback-region">
+        <partial name="_Feedback" />
+    </div>
+
+    <main id="main-content" class="site-main">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container site-footer__inner">
+            <div class="site-footer__intro">
+                <a class="site-footer__brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false"><path d="M6 8h12l-1 11H7L6 8Z" /><path d="M8 8a4 4 0 0 1 8 0M9 12h.01M12 14h.01M15 12h.01" /><path d="M15.5 4.5c1.7-1.7 3.4-1.4 4-1.3-.1.7-.5 2.3-2.1 3.1-1 .5-1.7.3-2.2.1" /></svg>
+                    </span>
+                    <span class="brand-wordmark">MilkTeaWeb</span>
+                </a>
+                <p class="site-footer__description">Một góc nhỏ để bạn chọn món trà sữa yêu thích và tùy chỉnh theo khẩu vị riêng.</p>
+            </div>
+            <div class="site-footer__social">
+                <p class="site-footer__social-label">Kết nối với MilkTeaWeb</p>
+                <p class="site-footer__social-note">Theo dõi những vị trà mới và câu chuyện phía sau mỗi ly trà.</p>
+                <div class="site-footer__social-links" aria-label="Mạng xã hội">
+                    <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                        <span class="site-footer__social-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5" /><circle cx="12" cy="12" r="4" /><circle cx="17.4" cy="6.6" r=".9" /></svg>
+                        </span>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                        <span class="site-footer__social-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false"><path d="M14 20v-7h2.6l.4-3H14V8.1c0-.9.3-1.5 1.6-1.5H17V3.9c-.6-.1-1.4-.2-2.4-.2-2.4 0-4.1 1.5-4.1 4.2V10H8v3h2.5v7H14Z" /></svg>
+                        </span>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                        <span class="site-footer__social-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false"><path d="M14 4v10.2a3.3 3.3 0 1 1-2-3.1V6.5c1.8 1.6 3.8 2.3 6 2.4V6.8c-1.7-.2-3-1.1-4-2.8Z" /></svg>
+                        </span>
+                        <span>TikTok</span>
+                    </a>
+                </div>
+            </div>
+            <div class="site-footer__links">
+                <div class="site-footer__group">
+                    <p>Khám phá</p>
+                    <a asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                    <a asp-area="" asp-controller="Products" asp-action="Index">Sản phẩm</a>
+                    <a asp-area="" asp-controller="Blog" asp-action="Index">Bài viết</a>
+                    @if (!User.IsInRole(RoleNames.Admin))
+                    {
+                        <a asp-area="" asp-controller="Cart" asp-action="Index">Giỏ hàng</a>
+                    }
+                </div>
+                <div class="site-footer__group">
+                    <p>Thông tin</p>
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy">Quyền riêng tư</a>
+                </div>
+            </div>
+        </div>
+        <div class="container site-footer__bottom">
+            <div class="site-footer__meta">
+                <span>&copy; @DateTime.UtcNow.Year MilkTeaWeb</span>
+                <span class="site-footer__student">Trần Trọng Kim - VX24TTK7</span>
+            </div>
+            <span>Được xây dựng với sự chăm chút cho từng ly trà sữa.</span>
+        </div>
+    </footer>
+
+    @{
+        var isAuthenticated = User.Identity?.IsAuthenticated == true;
+        var isCustomerOnly = isAuthenticated
+            && User.IsInRole(RoleNames.Customer)
+            && !User.IsInRole(RoleNames.Admin);
+    }
+    @if (!isAuthenticated || isCustomerOnly)
+    {
+        <partial name="_AssistantWidget" model="isCustomerOnly" />
+    }
+
+    <button class="back-to-top" type="button" data-back-to-top aria-label="Cuộn lên đầu trang" aria-hidden="true" tabindex="-1" title="Cuộn lên đầu trang">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="m6 14 6-6 6 6" />
+            <path d="M12 8v10" />
+        </svg>
+    </button>
+
+    <partial name="_ConfirmationModal" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

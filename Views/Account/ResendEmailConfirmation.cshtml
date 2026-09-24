@@ -1,0 +1,27 @@
+@model ResendEmailConfirmationInputModel
+@{
+    ViewData["Title"] = "Gửi lại email xác nhận";
+}
+
+<section class="account-shell">
+    <div class="account-card">
+        <div class="account-card__header">
+            <p class="eyebrow">Xác nhận email</p>
+            <h1>Gửi lại email xác nhận</h1>
+            <p>Chỉ cần sử dụng khi bạn chưa nhận được email xác nhận tài khoản. Hãy kiểm tra cả thư mục Spam.</p>
+        </div>
+        <form asp-action="ResendEmailConfirmation" method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="validation-summary-valid" role="alert" tabindex="-1"></div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label is-required">Email</label>
+                <input asp-for="Email" class="form-control" autocomplete="email" aria-describedby="ResendEmail_Email-error" />
+                <span asp-validation-for="Email" class="field-validation-error" id="ResendEmail_Email-error"></span>
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Gửi hướng dẫn</button>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

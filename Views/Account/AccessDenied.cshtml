@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Không có quyền truy cập";
+}
+
+<section class="account-shell account-shell--security">
+    <div class="account-card account-card--security">
+        <div class="account-card__header">
+            <p class="eyebrow">Truy cập bị từ chối</p>
+            <h1>Bạn không có quyền truy cập trang này.</h1>
+            <p>Hãy quay lại trang chủ hoặc đăng nhập bằng tài khoản phù hợp.</p>
+        </div>
+        <div class="account-result account-result--warning" role="alert"><span class="account-result__icon" aria-hidden="true">!</span><p>Nếu bạn cho rằng đây là nhầm lẫn, hãy đăng nhập bằng tài khoản có quyền phù hợp.</p></div>
+        <div class="account-links account-links--result"><a class="account-link--primary" asp-controller="Home" asp-action="Index">Về trang chủ</a><a asp-controller="Account" asp-action="Login">Đăng nhập</a></div>
+    </div>
+</section>

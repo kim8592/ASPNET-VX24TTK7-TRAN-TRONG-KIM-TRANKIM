@@ -1,0 +1,106 @@
+@model MilkTeaWeb.ViewModels.Cart.CartPageViewModel
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<section class="shop-page-heading shop-page-heading--compact">
+    <p class="eyebrow">ĐƠN HÀNG CỦA BẠN</p>
+    <h1>Giỏ hàng</h1>
+    <p>Giá được cập nhật theo cấu hình hiện tại của từng sản phẩm.</p>
+</section>
+
+@if (!Model.HasAnyItems)
+{
+    <section class="empty-state cart-empty" aria-labelledby="cart-empty-title">
+        <span class="empty-state__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+                <path d="M4 5h2l2.1 10.1a1 1 0 0 0 1 .8h8.7a1 1 0 0 0 1-.8L20.5 8H7" />
+                <path d="M10 19h.01M17 19h.01" />
+                <circle cx="10" cy="19" r="1.2" />
+                <circle cx="17" cy="19" r="1.2" />
+            </svg>
+        </span>
+        <h2 id="cart-empty-title">Giỏ hàng đang trống</h2>
+        <p>Hãy chọn một món trong menu và tùy chỉnh theo sở thích của bạn.</p>
+        <a class="btn btn-primary" asp-controller="Products" asp-action="Index">Khám phá menu</a>
+    </section>
+}
+else
+{
+    <div class="cart-overview" aria-label="Tóm tắt giỏ hàng">
+        <div>
+            <span class="cart-overview__label">Đang chọn</span>
+            <strong>@Model.TotalQuantity món</strong>
+        </div>
+        <span class="cart-overview__separator" aria-hidden="true">•</span>
+        <div>
+            <span class="cart-overview__label">Số dòng món</span>
+            <strong>@Model.TotalLineCount</strong>
+        </div>
+    </div>
+
+    <div class="cart-layout">
+        <div class="cart-lines">
+            @if (Model.Items.Count > 0)
+            {
+                <section class="cart-section" aria-label="Sản phẩm trong giỏ hàng">
+                    <div class="cart-section__heading">
+                        <div>
+                            <p class="eyebrow">ĐÃ CHỌN</p>
+                            <h2>Các món trong giỏ</h2>
+                        </div>
+                        <span class="cart-section__count">@Model.Items.Count món</span>
+                    </div>
+                    @foreach (var item in Model.Items)
+                    {
+                        <partial name="_CartLine" model="item" />
+                    }
+                </section>
+            }
+
+            @if (Model.GuestLeftovers.Count > 0)
+            {
+                <section class="cart-section cart-section--attention" aria-labelledby="cart-leftovers-title">
+                    <div class="cart-section__heading">
+                        <div><p class="eyebrow">CẦN KIỂM TRA</p><h2 id="cart-leftovers-title">Sản phẩm cần kiểm tra lại</h2></div>
+                        <p>Một số lựa chọn trước đó không còn phù hợp. Bạn có thể xóa hoặc cấu hình lại món.</p>
+                    </div>
+                    @foreach (var item in Model.GuestLeftovers)
+                    {
+                        <partial name="_CartLine" model="item" />
+                    }
+                </section>
+            }
+        </div>
+
+        <aside class="cart-summary" aria-label="Tóm tắt giỏ hàng">
+            <h2>Tóm tắt đơn hàng</h2>
+            <div><span>@Model.TotalQuantity món</span><strong>@Model.Subtotal.ToString("N0") đ</strong></div>
+            @if (Model.HasInvalidItems)
+            {
+                <p class="cart-summary__notice">Có sản phẩm cần kiểm tra lại trước khi tiếp tục các bước sau.</p>
+            }
+            @if (Model.CanCheckout)
+            {
+                <a class="btn btn-primary w-100" asp-controller="Checkout" asp-action="Index">Tiến hành đặt hàng</a>
+                @if (!Model.IsCustomer)
+                {
+                    <p class="cart-summary__notice">Bạn sẽ được yêu cầu đăng nhập trước khi thanh toán.</p>
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(Model.CheckoutUnavailableMessage))
+            {
+                <button class="btn btn-secondary w-100" type="button" disabled aria-describedby="checkout-unavailable-message">Tiến hành đặt hàng</button>
+                <p id="checkout-unavailable-message" class="cart-summary__notice">@Model.CheckoutUnavailableMessage</p>
+            }
+            <form asp-action="Clear" method="post" data-confirm-form data-confirm-title="Xóa toàn bộ giỏ hàng?" data-confirm-message="Tất cả sản phẩm trong giỏ hàng sẽ được xóa." data-confirm-button-label="Xóa giỏ hàng" data-confirm-button-style="destructive">
+                <button class="btn btn-secondary w-100" type="submit">Xóa toàn bộ giỏ hàng</button>
+            </form>
+            <a class="cart-summary__continue" asp-controller="Products" asp-action="Index">← Tiếp tục chọn món</a>
+        </aside>
+    </div>
+}
+
+@section Scripts {
+    <script src="~/js/shop.js" asp-append-version="true"></script>
+}

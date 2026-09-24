@@ -1,0 +1,22 @@
+@model IReadOnlyList<MilkTeaWeb.ViewModels.Blog.BlogPostViewModel>
+@{
+    ViewData["Title"] = "Bài viết";
+}
+
+<section class="blog-page-heading" aria-labelledby="blog-title">
+    <p class="eyebrow">GÓC NHỎ MILKTEAWEB</p>
+    <h1 id="blog-title">Câu chuyện từ ly trà.</h1>
+    <p>Những mẩu chuyện ngắn về hương trà, cách chọn món và niềm vui hoàn thiện một ly nước uống theo gu riêng.</p>
+    <div class="blog-page-heading__meta" aria-label="Tổng quan bài viết">
+        <span><strong>@Model.Count</strong> bài viết</span>
+        <span aria-hidden="true">·</span>
+        <span>Đọc chậm, chọn kỹ, uống theo gu</span>
+    </div>
+</section>
+
+<section class="blog-grid" aria-label="Danh sách bài viết">
+    @foreach (var post in Model)
+    {
+        <partial name="_BlogCard" model="post" />
+    }
+</section>

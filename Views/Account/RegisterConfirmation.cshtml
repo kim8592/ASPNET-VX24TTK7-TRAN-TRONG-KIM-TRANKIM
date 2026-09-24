@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Xác nhận đăng ký";
+}
+
+<section class="account-shell account-shell--security">
+    <div class="account-card account-card--security">
+        <div class="account-card__header">
+            <p class="eyebrow">Kiểm tra email</p>
+            <h1>Xác nhận tài khoản</h1>
+            <p>Nếu tài khoản phù hợp, hướng dẫn xác nhận đã được gửi đến email đã đăng ký.</p>
+        </div>
+        <div class="account-result account-result--info" role="status"><span class="account-result__icon" aria-hidden="true">&#64;</span><p>Liên kết xác nhận có thể mất vài phút để đến. Hãy kiểm tra thư mục spam nếu cần.</p></div>
+        <div class="account-links account-links--result">
+            <a class="account-link--primary" asp-action="ResendEmailConfirmation">Gửi lại email xác nhận</a>
+            <a asp-action="Login">Đăng nhập</a>
+        </div>
+    </div>
+</section>

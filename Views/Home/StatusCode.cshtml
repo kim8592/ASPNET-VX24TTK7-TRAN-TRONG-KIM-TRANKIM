@@ -1,0 +1,15 @@
+@model int
+@{
+    ViewData["Title"] = "Không tìm thấy trang";
+}
+
+<section class="error-page error-page--not-found" aria-labelledby="not-found-title">
+    <div class="error-page__code" aria-hidden="true">404</div>
+    <p class="eyebrow">Không tìm thấy trang</p>
+    <h1 id="not-found-title">Có vẻ bạn đã đi lệch menu.</h1>
+    <p class="error-page__lead">Trang bạn đang tìm không tồn tại hoặc đã được chuyển sang một địa chỉ khác.</p>
+    <div class="error-page__actions">
+        <a class="btn btn-primary" asp-controller="Home" asp-action="Index">Về trang chủ</a>
+        <a class="btn btn-secondary" asp-controller="Products" asp-action="Index">Xem menu</a>
+    </div>
+</section>

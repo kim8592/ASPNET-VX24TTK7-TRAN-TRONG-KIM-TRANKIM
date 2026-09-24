@@ -1,0 +1,60 @@
+@model bool
+@{
+    var assistantMode = Model ? "customer" : "guest";
+}
+
+<aside class="assistant-widget"
+       data-assistant
+       data-assistant-mode="@assistantMode"
+       data-products-url="@Url.Action("Index", "Products")"
+       data-login-url="@Url.Action("Login", "Account")"
+       data-register-url="@Url.Action("Register", "Account")"
+       data-orders-url="@Url.Action("Index", "Orders")"
+       data-cart-url="@Url.Action("Index", "Cart")"
+       data-latest-order-url="@Url.Action("LatestOrder", "Assistant")">
+    <button class="assistant-widget__trigger" type="button" data-assistant-trigger aria-expanded="false" aria-controls="assistant-panel" aria-label="Mở Trợ lý MilkTeaWeb" title="Trợ lý MilkTeaWeb">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M6.5 7.5h11a2.5 2.5 0 0 1 2.5 2.5v5a2.5 2.5 0 0 1-2.5 2.5h-6L7 20v-2.5h-.5A2.5 2.5 0 0 1 4 15v-5a2.5 2.5 0 0 1 2.5-2.5Z" />
+            <path d="M8.5 12h.01M12 12h.01M15.5 12h.01" />
+            <path d="M15.5 4.5c1.7-1.7 3.4-1.4 4-1.3-.1.7-.5 2.3-2.1 3.1-1 .5-1.7.3-2.2.1" />
+        </svg>
+    </button>
+
+    <section id="assistant-panel" class="assistant-widget__panel" data-assistant-panel role="dialog" aria-modal="false" aria-labelledby="assistant-panel-title" aria-describedby="assistant-panel-description" hidden>
+        <header class="assistant-widget__header">
+            <div>
+                <p class="assistant-widget__eyebrow">TRỢ LÝ TỰ ĐỘNG</p>
+                <h2 id="assistant-panel-title">Trợ lý MilkTeaWeb</h2>
+                <p id="assistant-panel-description">Gợi ý nhanh cho hành trình chọn món của bạn.</p>
+            </div>
+            <button class="assistant-widget__close" type="button" data-assistant-close aria-label="Đóng Trợ lý MilkTeaWeb" title="Đóng">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m7 7 10 10M17 7 7 17" /></svg>
+            </button>
+        </header>
+
+        <div class="assistant-widget__messages" data-assistant-messages role="log" aria-live="polite" aria-relevant="additions"></div>
+
+        <footer class="assistant-widget__footer">
+            <p class="assistant-widget__prompt">Bạn muốn hỗ trợ điều gì?</p>
+            <div class="assistant-widget__quick-replies" data-assistant-quick-replies>
+                @if (Model)
+                {
+                    <button type="button" data-assistant-action="latest-order">Kiểm tra đơn mới nhất</button>
+                    <button type="button" data-assistant-action="orders">Xem lịch sử đơn hàng</button>
+                    <button type="button" data-assistant-action="cart">Xem giỏ hàng</button>
+                    <button type="button" data-assistant-action="menu">Khám phá menu</button>
+                    <button type="button" data-assistant-action="cancel-help">Hủy đơn như thế nào?</button>
+                }
+                else
+                {
+                    <button type="button" data-assistant-action="menu">Khám phá menu</button>
+                    <button type="button" data-assistant-action="customize">Tùy chỉnh món</button>
+                    <button type="button" data-assistant-action="place-order">Cách đặt hàng</button>
+                    <button type="button" data-assistant-action="fulfillment">Nhận hàng &amp; thanh toán</button>
+                    <button type="button" data-assistant-action="account">Đăng nhập / Tạo tài khoản</button>
+                }
+            </div>
+            <button class="assistant-widget__restart" type="button" data-assistant-restart>Bắt đầu lại</button>
+        </footer>
+    </section>
+</aside>

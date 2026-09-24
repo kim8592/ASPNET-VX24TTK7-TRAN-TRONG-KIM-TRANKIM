@@ -1,0 +1,77 @@
+@using MilkTeaWeb.Models.Enums
+@model MilkTeaWeb.ViewModels.Checkout.CheckoutReviewViewModel
+@{
+    ViewData["Title"] = "Xem lại đơn hàng";
+    var fulfillmentLabel = Model.FulfillmentMethod == FulfillmentMethod.Pickup ? "Nhận tại cửa hàng" : "Giao tận nơi";
+    var paymentLabel = Model.PaymentMethod == PaymentMethod.PayAtStore ? "Thanh toán tại cửa hàng" : "Tiền mặt khi nhận hàng (COD)";
+}
+
+<section class="shop-page-heading shop-page-heading--compact">
+    <p class="eyebrow">XÁC NHẬN THÔNG TIN</p>
+    <h1>Xem lại đơn hàng</h1>
+    <p>Giá và khả dụng đã được cập nhật theo thông tin hiện tại trước khi tiếp tục.</p>
+</section>
+
+<div class="checkout-layout checkout-review-layout">
+    <div class="checkout-review">
+        <div class="checkout-review-confirmation" role="status">
+            <span class="checkout-review-confirmation__icon" aria-hidden="true">✓</span>
+            <div>
+                <strong>Thông tin đã sẵn sàng để đặt hàng</strong>
+                <p>Kiểm tra lần cuối các món, cửa hàng và thông tin nhận hàng trước khi đặt.</p>
+            </div>
+        </div>
+
+        <section class="checkout-review__section">
+            <h2>Nhận hàng</h2>
+            <dl>
+                <div><dt>Hình thức</dt><dd>@fulfillmentLabel</dd></div>
+                <div><dt>Cửa hàng</dt><dd><strong>@Model.Store.Name</strong><br /><span>@Model.Store.Address · @Model.Store.Phone</span></dd></div>
+                <div><dt>Người nhận</dt><dd>@Model.RecipientName<br /><span>@Model.RecipientPhone</span></dd></div>
+                @if (Model.FulfillmentMethod == FulfillmentMethod.Delivery)
+                {
+                    <div><dt>Địa chỉ</dt><dd>@Model.DeliveryAddress</dd></div>
+                }
+                <div><dt>Thanh toán</dt><dd>@paymentLabel</dd></div>
+                @if (!string.IsNullOrWhiteSpace(Model.OrderNote))
+                {
+                    <div><dt>Ghi chú</dt><dd>@Model.OrderNote</dd></div>
+                }
+            </dl>
+        </section>
+
+        <section class="checkout-review__section" aria-labelledby="review-items-title">
+            <h2 id="review-items-title">Sản phẩm đã chọn</h2>
+            <div class="checkout-summary__lines">
+                @foreach (var item in Model.Items)
+                {
+                    <partial name="_CartLineSummary" model="item" />
+                }
+            </div>
+        </section>
+    </div>
+
+    <aside class="checkout-summary" aria-label="Tổng thanh toán">
+        <h2>Tổng thanh toán</h2>
+        <dl class="checkout-totals">
+            <div><dt>Tạm tính</dt><dd aria-live="polite">@Model.Subtotal.ToString("N0") đ</dd></div>
+            <div><dt>Phí giao hàng</dt><dd aria-live="polite">@Model.DeliveryFee.ToString("N0") đ</dd></div>
+            <div class="checkout-totals__total"><dt>Tổng cộng</dt><dd aria-live="polite">@Model.Total.ToString("N0") đ</dd></div>
+        </dl>
+        <p class="checkout-summary__hint">Giá và khả dụng sẽ được kiểm tra lại một lần cuối khi đặt hàng.</p>
+        <form asp-action="PlaceOrder" method="post" data-place-order-form>
+            <input type="hidden" name="StoreId" value="@Model.Store.StoreId" />
+            <input type="hidden" name="FulfillmentMethod" value="@Model.FulfillmentMethod" />
+            <input type="hidden" name="RecipientName" value="@Model.RecipientName" />
+            <input type="hidden" name="RecipientPhone" value="@Model.RecipientPhone" />
+            <input type="hidden" name="DeliveryAddress" value="@Model.DeliveryAddress" />
+            <input type="hidden" name="OrderNote" value="@Model.OrderNote" />
+            <button class="btn btn-primary w-100" type="submit" data-place-order-button>Đặt hàng</button>
+        </form>
+        <a class="cart-summary__continue" asp-action="Index">← Quay lại chỉnh sửa</a>
+    </aside>
+</div>
+
+@section Scripts {
+    <script src="~/js/checkout.js" asp-append-version="true"></script>
+}

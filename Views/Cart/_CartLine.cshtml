@@ -1,0 +1,68 @@
+@model MilkTeaWeb.ViewModels.Cart.CartLineViewModel
+<article class="cart-line @(!Model.IsValid ? "cart-line--invalid" : string.Empty)">
+    <div class="cart-line__image">
+        @if (string.IsNullOrWhiteSpace(Model.ImagePath))
+        {
+            <span class="product-placeholder" aria-hidden="true">☕</span>
+        }
+        else
+        {
+            <img src="@Model.ImagePath" alt="@Model.ProductName" />
+        }
+    </div>
+    <div class="cart-line__content">
+        <div class="cart-line__topline">
+            <div>
+                <h2>@Model.ProductName</h2>
+                <p class="cart-line__options">
+                    <span>@Model.SizeName</span>
+                    @if (Model.SugarPercentage is int sugar) { <span>Đường @sugar%</span> }
+                    @if (Model.IcePercentage is int ice) { <span>Đá @ice%</span> }
+                    @foreach (var topping in Model.Toppings) { <span>@topping.Name</span> }
+                </p>
+            </div>
+        </div>
+        <div class="cart-line__pricing" aria-label="Giá món">
+            <span>@Model.CurrentUnitPrice.ToString("N0") đ / món × @Model.Quantity</span>
+            <strong class="cart-line__total">@Model.CurrentLineTotal.ToString("N0") đ</strong>
+        </div>
+        @if (!Model.IsValid)
+        {
+            <div class="cart-line__warning" role="alert">
+                <strong>Cần kiểm tra lại</strong>
+                @foreach (var message in Model.ValidationMessages) { <span>@message</span> }
+            </div>
+        }
+        <div class="cart-line__actions">
+            <form asp-action="UpdateQuantity" method="post" class="cart-quantity-form">
+                @if (Model.CartItemId is int cartItemId) { <input type="hidden" name="CartItemId" value="@cartItemId" /> }
+                @if (!string.IsNullOrWhiteSpace(Model.GuestLineKey)) { <input type="hidden" name="GuestLineKey" value="@Model.GuestLineKey" /> }
+                <label class="visually-hidden" for="quantity-@(Model.CartItemId?.ToString() ?? Model.GuestLineKey)">Số lượng @Model.ProductName</label>
+                <div class="quantity-control quantity-control--small" data-quantity-control>
+                    <button type="button" data-quantity-step="-1" aria-label="Giảm số lượng">−</button>
+                    <input id="quantity-@(Model.CartItemId?.ToString() ?? Model.GuestLineKey)" type="number" name="Quantity" min="1" value="@Model.Quantity" @(Model.IsValid ? null : "disabled") />
+                    <button type="button" data-quantity-step="1" aria-label="Tăng số lượng" @(Model.IsValid ? null : "disabled")>+</button>
+                </div>
+                @if (Model.IsValid) { <button class="btn btn-link" type="submit">Cập nhật</button> }
+            </form>
+            <div class="cart-line__links">
+                @if (Model.CanReconfigure && Model.ProductId is int productId)
+                {
+                    if (!string.IsNullOrWhiteSpace(Model.GuestLineKey))
+                    {
+                        <a class="btn-link cart-line__reconfigure" asp-controller="Products" asp-action="Details" asp-route-id="@productId" asp-route-guestLineKey="@Model.GuestLineKey">Tùy chỉnh lại</a>
+                    }
+                    else if (Model.CartItemId is int cartItemId)
+                    {
+                        <a class="btn-link cart-line__reconfigure" asp-controller="Products" asp-action="Details" asp-route-id="@productId" asp-route-cartItemId="@cartItemId">Tùy chỉnh lại</a>
+                    }
+                }
+                <form asp-action="Remove" method="post" data-confirm-form data-confirm-title="Xóa sản phẩm?" data-confirm-message="Sản phẩm này sẽ được xóa khỏi giỏ hàng." data-confirm-button-label="Xóa" data-confirm-button-style="destructive">
+                    @if (Model.CartItemId is int cartItemId) { <input type="hidden" name="CartItemId" value="@cartItemId" /> }
+                    @if (!string.IsNullOrWhiteSpace(Model.GuestLineKey)) { <input type="hidden" name="GuestLineKey" value="@Model.GuestLineKey" /> }
+                    <button class="btn btn-link btn-link--danger" type="submit">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</article>

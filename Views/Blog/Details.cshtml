@@ -1,0 +1,89 @@
+@model MilkTeaWeb.ViewModels.Blog.BlogPostViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<article class="blog-post">
+    <a class="blog-post__back" asp-action="Index">← Quay lại bài viết</a>
+    <header class="blog-post__header">
+        <p class="eyebrow">@Model.Category</p>
+        <h1>@Model.Title</h1>
+        <div class="blog-post__meta">
+            <time datetime="@Model.PublishedOn.ToString("yyyy-MM-dd")">@Model.PublishedOn.ToString("dd.MM.yyyy")</time>
+            <span aria-hidden="true">·</span>
+            <span>MilkTeaWeb</span>
+        </div>
+    </header>
+
+    <figure class="blog-post__hero">
+        <img src="@Model.ImagePath" alt="@Model.ImageAlt" />
+        <figcaption>
+            Ảnh: <a href="@Model.ImageCreditUrl" target="_blank" rel="noopener noreferrer">@Model.ImageCreditName</a>
+        </figcaption>
+    </figure>
+
+    @if (Model.Sections.Count > 1)
+    {
+        <nav class="blog-post__toc" aria-label="Nội dung bài viết">
+            <p class="eyebrow">Trong bài viết</p>
+            <ol>
+                @for (var sectionIndex = 0; sectionIndex < Model.Sections.Count; sectionIndex++)
+                {
+                    <li><a href="#blog-section-@sectionIndex">@Model.Sections[sectionIndex].Heading</a></li>
+                }
+            </ol>
+        </nav>
+    }
+
+    <div class="blog-post__content">
+        <p class="blog-post__lead">@Model.Excerpt</p>
+
+        @if (Model.Highlights.Count > 0)
+        {
+            <div class="blog-post__highlights" aria-label="Điểm chính của bài viết">
+                @foreach (var highlight in Model.Highlights)
+                {
+                    <div>
+                        <span>@highlight.Label</span>
+                        <strong>@highlight.Value</strong>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.PullQuote))
+        {
+            <blockquote class="blog-post__quote">“@Model.PullQuote”</blockquote>
+        }
+
+        @for (var sectionIndex = 0; sectionIndex < Model.Sections.Count; sectionIndex++)
+        {
+            var postSection = Model.Sections[sectionIndex];
+            <section id="blog-section-@sectionIndex" class="blog-post__section" aria-labelledby="blog-section-title-@sectionIndex">
+                <h2 id="blog-section-title-@sectionIndex">@postSection.Heading</h2>
+                @foreach (var paragraph in postSection.Paragraphs)
+                {
+                    <p>@paragraph</p>
+                }
+            </section>
+
+            @if (sectionIndex == 0 && !string.IsNullOrWhiteSpace(Model.SecondaryImagePath))
+            {
+                <figure class="blog-post__inline-media">
+                    <img src="@Model.SecondaryImagePath" alt="@Model.SecondaryImageAlt" loading="lazy" />
+                    @if (!string.IsNullOrWhiteSpace(Model.SecondaryImageCreditUrl))
+                    {
+                        <figcaption>
+                            Ảnh: <a href="@Model.SecondaryImageCreditUrl" target="_blank" rel="noopener noreferrer">@Model.SecondaryImageCreditName</a>
+                        </figcaption>
+                    }
+                </figure>
+            }
+        }
+    </div>
+
+    <footer class="blog-post__footer">
+        <a class="btn btn-primary" asp-action="Index">Xem thêm bài viết</a>
+        <a class="blog-post__menu-link" asp-controller="Products" asp-action="Index">Chọn món theo gu <span aria-hidden="true">↗</span></a>
+    </footer>
+</article>

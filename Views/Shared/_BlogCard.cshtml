@@ -1,0 +1,21 @@
+@model MilkTeaWeb.ViewModels.Blog.BlogPostViewModel
+
+<article class="blog-card">
+    <a class="blog-card__media" asp-controller="Blog" asp-action="Details" asp-route-slug="@Model.Slug" aria-label="Đọc bài viết @Model.Title">
+        <img src="@Model.ImagePath" alt="@Model.ImageAlt" loading="lazy" />
+    </a>
+    <div class="blog-card__body">
+        <div class="blog-card__meta">
+            <span>@Model.Category</span>
+            <span aria-hidden="true">·</span>
+            <time datetime="@Model.PublishedOn.ToString("yyyy-MM-dd")">@Model.PublishedOn.ToString("dd.MM.yyyy")</time>
+        </div>
+        <h2 class="blog-card__title">
+            <a asp-controller="Blog" asp-action="Details" asp-route-slug="@Model.Slug">@Model.Title</a>
+        </h2>
+        <p class="blog-card__excerpt">@Model.Excerpt</p>
+        <a class="blog-card__link" asp-controller="Blog" asp-action="Details" asp-route-slug="@Model.Slug">
+            Đọc bài viết <span aria-hidden="true">↗</span>
+        </a>
+    </div>
+</article>

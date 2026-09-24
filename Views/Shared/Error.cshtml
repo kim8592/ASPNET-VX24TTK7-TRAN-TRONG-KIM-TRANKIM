@@ -1,0 +1,25 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Có lỗi xảy ra";
+}
+
+<section class="error-page" aria-labelledby="error-title">
+    <div class="error-page__icon" aria-hidden="true">!</div>
+    <p class="eyebrow">MilkTeaWeb</p>
+    <h1 id="error-title">Có lỗi xảy ra.</h1>
+    <p class="error-page__lead">Hệ thống chưa thể hoàn tất yêu cầu này. Bạn có thể thử lại hoặc quay về trang chủ.</p>
+    <div class="error-page__actions"><a class="btn btn-primary" asp-controller="Home" asp-action="Index">Về trang chủ</a><button class="btn btn-secondary" type="button" onclick="window.location.reload()">Thử lại</button></div>
+
+    @if (Model.ShowRequestId)
+    {
+        <p class="error-page__request"><strong>Mã yêu cầu:</strong> <code>@Model.RequestId</code></p>
+    }
+
+    @if (Context.RequestServices.GetRequiredService<Microsoft.AspNetCore.Hosting.IWebHostEnvironment>().IsDevelopment())
+    {
+        <details class="error-page__development">
+            <summary>Thông tin dành cho môi trường phát triển</summary>
+            <p>Trong môi trường Development, hệ thống có thể hiển thị thêm thông tin chi tiết để hỗ trợ debug. Không nên bật môi trường này khi triển khai thực tế vì có thể làm lộ dữ liệu nhạy cảm.</p>
+        </details>
+    }
+</section>

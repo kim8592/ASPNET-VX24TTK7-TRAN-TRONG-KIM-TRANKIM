@@ -1,0 +1,55 @@
+@model RegisterInputModel
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<section class="account-shell">
+    <div class="account-card">
+        <div class="account-card__header">
+            <p class="eyebrow">Tài khoản khách hàng</p>
+            <h1>Đăng ký</h1>
+            <p>Tạo tài khoản để sử dụng các tính năng dành cho khách hàng.</p>
+        </div>
+        <form asp-action="Register" method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="validation-summary-valid" role="alert" tabindex="-1"></div>
+            <p class="account-form-note">Các trường có dấu * là bắt buộc.</p>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label is-required">Email</label>
+                <input asp-for="Email" class="form-control" autocomplete="email" aria-describedby="Register_Email-error" />
+                <span asp-validation-for="Email" class="field-validation-error" id="Register_Email-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label is-required">Họ tên</label>
+                <input asp-for="FullName" class="form-control" autocomplete="name" aria-describedby="Register_FullName-error" />
+                <span asp-validation-for="FullName" class="field-validation-error" id="Register_FullName-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Phone" class="form-label is-required">Số điện thoại</label>
+                <input asp-for="Phone" class="form-control" type="tel" autocomplete="tel" aria-describedby="Register_Phone-error" />
+                <span asp-validation-for="Phone" class="field-validation-error" id="Register_Phone-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label is-required">Mật khẩu</label>
+                <div class="input-group">
+                    <input asp-for="Password" class="form-control" id="register-password" autocomplete="new-password" aria-describedby="Register_Password-hint Register_Password-error" />
+                    <button class="btn btn-secondary password-toggle" type="button" data-password-toggle="register-password" aria-pressed="false">Hiện</button>
+                </div>
+                <p id="Register_Password-hint" class="account-password-hint"><strong>Mật khẩu cần có:</strong> ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.</p>
+                <span asp-validation-for="Password" class="field-validation-error" id="Register_Password-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword" class="form-label is-required">Xác nhận mật khẩu</label>
+                <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" aria-describedby="Register_ConfirmPassword-error" />
+                <span asp-validation-for="ConfirmPassword" class="field-validation-error" id="Register_ConfirmPassword-error"></span>
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Tạo tài khoản</button>
+        </form>
+        <div class="account-links">
+            <a asp-action="Login">Đã có tài khoản? Đăng nhập</a>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

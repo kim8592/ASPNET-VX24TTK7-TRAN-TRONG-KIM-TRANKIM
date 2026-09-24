@@ -1,0 +1,45 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "Hồ sơ";
+}
+
+<section class="account-shell account-shell--profile">
+    <div class="account-card account-card--profile">
+        <div class="account-card__header">
+            <p class="eyebrow">Tài khoản</p>
+            <h1>Hồ sơ</h1>
+            <p>Cập nhật thông tin cơ bản của bạn.</p>
+        </div>
+        <form asp-action="Profile" method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="validation-summary-valid" role="alert" tabindex="-1"></div>
+            <p class="account-form-note">Thông tin này được dùng để điền nhanh thông tin nhận hàng khi bạn đặt món.</p>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" readonly aria-describedby="Profile_Email-note" />
+                <p class="form-text" id="Profile_Email-note">Email đăng nhập không thể thay đổi tại đây.</p>
+            </div>
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label is-required">Họ tên</label>
+                <input asp-for="FullName" class="form-control" autocomplete="name" aria-describedby="Profile_FullName-error" />
+                <span asp-validation-for="FullName" class="field-validation-error" id="Profile_FullName-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Phone" class="form-label is-required">Số điện thoại</label>
+                <input asp-for="Phone" class="form-control" type="tel" autocomplete="tel" aria-describedby="Profile_Phone-error" />
+                <span asp-validation-for="Phone" class="field-validation-error" id="Profile_Phone-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DefaultDeliveryAddress" class="form-label">Địa chỉ giao hàng mặc định</label>
+                <textarea asp-for="DefaultDeliveryAddress" class="form-control" autocomplete="street-address" aria-describedby="Profile_DefaultDeliveryAddress-note Profile_DefaultDeliveryAddress-error"></textarea>
+                <p class="form-text" id="Profile_DefaultDeliveryAddress-note">Bạn vẫn có thể thay đổi địa chỉ riêng cho từng đơn hàng.</p>
+                <span asp-validation-for="DefaultDeliveryAddress" class="field-validation-error" id="Profile_DefaultDeliveryAddress-error"></span>
+            </div>
+            <div class="account-form-actions"><button class="btn btn-primary" type="submit">Lưu thay đổi</button></div>
+        </form>
+        <div class="account-security-link"><div><strong>Bảo mật tài khoản</strong><span>Đổi mật khẩu định kỳ để bảo vệ tài khoản.</span></div><a class="btn btn-secondary" asp-action="ChangePassword">Đổi mật khẩu</a></div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

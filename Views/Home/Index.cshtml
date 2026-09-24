@@ -1,0 +1,131 @@
+@model MilkTeaWeb.ViewModels.Home.HomeViewModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="home-page">
+    <section class="home-hero" aria-labelledby="home-title">
+        <div class="home-hero__wash" aria-hidden="true"></div>
+        @if (!string.IsNullOrWhiteSpace(Model.HeroImagePath))
+        {
+            <img class="home-hero__image" src="@Model.HeroImagePath" alt="" aria-hidden="true" />
+        }
+        <div class="home-hero__inner">
+            <div class="home-hero__copy">
+                <p class="eyebrow home-hero__eyebrow">MILKTEAWEB <span>·</span> TEA BAR ONLINE</p>
+                <h1 id="home-title">Một ly trà sữa,<br /><em>đúng gu của bạn.</em></h1>
+                <p class="home-hero__lead">Chọn vị trà yêu thích, thêm topping và tạo nên món uống vừa vặn với tâm trạng hôm nay.</p>
+                <div class="home-hero__actions">
+                    <a class="btn btn-primary" asp-controller="Products" asp-action="Index">Khám phá menu <span aria-hidden="true">↗</span></a>
+                    <a class="home-hero__text-link" href="#featured">Xem món nổi bật <span aria-hidden="true">↓</span></a>
+                </div>
+            </div>
+            <div class="home-hero__caption">
+                <span class="home-hero__caption-line"></span>
+                <span>PHA THEO CÁCH BẠN THÍCH</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="home-rhythm" data-reveal="fade-up" aria-label="Điểm nổi bật của MilkTeaWeb">
+        <div><span class="home-rhythm__number">01</span><strong>Tươi mỗi ngày</strong><p>Nguyên liệu được chọn để giữ vị trà rõ và hậu vị nhẹ.</p></div>
+        <div><span class="home-rhythm__number">02</span><strong>Tùy chỉnh theo gu</strong><p>Chọn size, đường, đá và topping theo đúng khẩu vị riêng.</p></div>
+        <div><span class="home-rhythm__number">03</span><strong>Đặt nhanh, nhận vui</strong><p>Chọn món trực tuyến rồi ghé cửa hàng gần bạn.</p></div>
+    </section>
+
+    <section class="home-section home-featured" id="featured" data-reveal="fade-up" aria-labelledby="featured-title">
+        <div class="home-section__heading">
+            <div><p class="eyebrow">CHỌN MÓN HÔM NAY</p><h2 id="featured-title">Món được yêu thích</h2></div>
+            <a class="home-section__link" asp-controller="Products" asp-action="Index">Xem toàn bộ menu <span aria-hidden="true">↗</span></a>
+        </div>
+        @if (Model.FeaturedProducts.Count == 0)
+        {
+            <div class="home-empty">Menu đang được chuẩn bị. Hãy quay lại sau ít phút nhé.</div>
+        }
+        else
+        {
+            <div class="home-product-grid">
+                @foreach (var product in Model.FeaturedProducts)
+                {
+                    <article class="home-product-card" data-reveal-item>
+                        <a class="home-product-card__image" asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId" aria-label="Xem @product.Name">
+                            @if (!string.IsNullOrWhiteSpace(product.ImagePath))
+                            {
+                                <img src="@product.ImagePath" alt="@product.Name" loading="lazy" />
+                            }
+                            else
+                            {
+                                <span class="home-product-card__placeholder" aria-hidden="true">☕</span>
+                            }
+                            <span class="home-product-card__arrow" aria-hidden="true">↗</span>
+                        </a>
+                        <div class="home-product-card__body">
+                            <p class="home-product-card__category">@product.CategoryName</p>
+                            <h3><a asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId">@product.Name</a></h3>
+                            <div><span>Từ @product.StartingPrice.ToString("N0") đ</span><small>@(string.IsNullOrWhiteSpace(product.Description) ? "Tùy chỉnh theo khẩu vị" : product.Description)</small></div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="home-section home-blog-preview" data-reveal="fade-up" aria-labelledby="blog-preview-title">
+        <div class="home-section__heading">
+            <div>
+                <p class="eyebrow">GÓC NHỎ MILKTEAWEB</p>
+                <h2 id="blog-preview-title">Câu chuyện từ ly trà</h2>
+            </div>
+            <a class="home-section__link" asp-controller="Blog" asp-action="Index">Xem tất cả bài viết <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="home-blog-grid">
+            @foreach (var post in Model.RecentPosts.Take(3))
+            {
+                <partial name="_BlogCard" model="post" />
+            }
+        </div>
+    </section>
+
+    <section class="home-category-band" data-reveal="fade-up" aria-labelledby="category-title">
+        <div class="home-category-band__intro"><p class="eyebrow">TÌM ĐÚNG MOOD</p><h2 id="category-title">Bạn đang muốn<br /><em>uống gì hôm nay?</em></h2></div>
+        <div class="home-category-list">
+            @if (Model.Categories.Count == 0)
+            {
+                <a asp-controller="Products" asp-action="Index"><span>Khám phá menu</span><strong>↗</strong></a>
+            }
+            else
+            {
+                @foreach (var category in Model.Categories)
+                {
+                    <a data-reveal-item asp-controller="Products" asp-action="Index" asp-route-categoryId="@category.CategoryId">
+                        @if (!string.IsNullOrWhiteSpace(category.ImagePath))
+                        {
+                            <img src="@category.ImagePath" alt="" loading="lazy" />
+                        }
+                        <span>@category.Name <small>@category.ProductCount món</small></span>
+                        <strong>↗</strong>
+                    </a>
+                }
+            }
+        </div>
+    </section>
+
+    <section class="home-story" data-reveal="fade-up" aria-labelledby="story-title">
+        <div class="home-story__media">
+            <img src="~/images/milktea-banner-section.jpg" asp-append-version="true" alt="Hai ly trà sữa trân châu bên cạnh dòng sữa trắng" loading="lazy" />
+            <span class="home-story__stamp">MILK<br />TEA<br />WEB</span>
+        </div>
+        <div class="home-story__copy">
+            <p class="eyebrow">LY TRÀ THEO GU BẠN</p>
+            <h2 id="story-title">Một ly quen thuộc,<br /><em>do bạn hoàn thiện.</em></h2>
+            <p>Chọn size, độ ngọt, lượng đá và topping cho từng món. Giá tạm tính cập nhật theo lựa chọn trước khi bạn thêm vào giỏ.</p>
+            <div class="home-story__steps" aria-label="Các bước tùy chỉnh món">
+                <div><span>01</span><strong>Chọn size</strong></div>
+                <div><span>02</span><strong>Chỉnh đường &amp; đá</strong></div>
+                <div><span>03</span><strong>Thêm topping</strong></div>
+            </div>
+            <a class="btn btn-primary home-story__cta" asp-controller="Products" asp-action="Index">Chọn món ngay</a>
+        </div>
+    </section>
+
+</div>

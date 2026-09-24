@@ -1,0 +1,32 @@
+@model MilkTeaWeb.ViewModels.Checkout.CheckoutCartLineViewModel
+
+<article class="checkout-cart-line">
+    @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+    {
+        <img src="@Model.ImagePath" alt="@Model.ProductName" />
+    }
+    else
+    {
+        <span class="checkout-cart-line__placeholder" aria-hidden="true">☕</span>
+    }
+    <div class="checkout-cart-line__content">
+        <h3>@Model.ProductName</h3>
+        <p>
+            <span>@Model.SizeName</span>
+            @if (Model.SugarPercentage.HasValue)
+            {
+                <span>Đường @Model.SugarPercentage%</span>
+            }
+            @if (Model.IcePercentage.HasValue)
+            {
+                <span>Đá @Model.IcePercentage%</span>
+            }
+            @foreach (var topping in Model.Toppings)
+            {
+                <span>@topping.Name</span>
+            }
+        </p>
+        <small>@Model.CurrentUnitPrice.ToString("N0") đ / món × @Model.Quantity</small>
+    </div>
+    <strong>@Model.CurrentLineTotal.ToString("N0") đ</strong>
+</article>
